@@ -1,0 +1,19 @@
+{
+	"name": "youtogether",
+	"version": "0.0.0",
+	"description": "Watch youtube videos together",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/vith/youtogether.git"
+	},
+	"keywords": ["youtube", "sync"],
+	"author": "Jason Papakostas <vithos@gmail.com>",
+	"bugs": {
+		"url": "https://github.com/vith/youtogether/issues"
+	},
+	"homepage": "https://github.com/vith/youtogether#readme"
+}
