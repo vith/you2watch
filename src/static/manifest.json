@@ -1,0 +1,20 @@
+{
+	"name": "YouTogether",
+	"version": "1.0",
+	"description": "Watch youtube videos together",
+	"manifest_version": 2,
+	"background": {
+		"scripts": ["background.js"],
+		"persistent": true
+	},
+	"content_scripts": [
+		{
+			"matches": ["https://www.youtube.com/*"],
+			"js": ["contentScript.js"]
+		}
+	],
+	"web_accessible_resources": ["injectedRuntime.js"],
+	"externally_connectable": {
+		"matches": ["https://www.youtube.com/*"]
+	}
+}

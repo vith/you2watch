@@ -2,18 +2,33 @@
 	"name": "youtogether",
 	"version": "0.0.0",
 	"description": "Watch youtube videos together",
-	"main": "index.js",
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"build": "webpack",
+		"watch": "webpack --watch"
 	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/vith/youtogether.git"
 	},
-	"keywords": ["youtube", "sync"],
+	"keywords": [
+		"youtube",
+		"sync"
+	],
 	"author": "Jason Papakostas <vithos@gmail.com>",
 	"bugs": {
 		"url": "https://github.com/vith/youtogether/issues"
 	},
-	"homepage": "https://github.com/vith/youtogether#readme"
+	"homepage": "https://github.com/vith/youtogether#readme",
+	"devDependencies": {
+		"copy-webpack-plugin": "^6.0.2",
+		"webpack": "^4.43.0",
+		"webpack-cli": "^3.3.12"
+	},
+	"dependencies": {
+		"@stomp/stompjs": "^5.4.4",
+		"crypto-random-string": "^3.2.0"
+	},
+	"browserslist": [
+		"last 1 chrome version"
+	]
 }
