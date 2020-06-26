@@ -32,7 +32,7 @@ const pageMessageHandler = (message, port) => {
 
 const pagePorts = []
 
-chrome.runtime.onConnectExternal.addListener((port) => {
+chrome.runtime.onConnectExternal.addListener(port => {
 	console.debug('background: port connected')
 	port.onMessage.addListener(pageMessageHandler)
 	pagePorts.push(port)
@@ -48,7 +48,7 @@ function stompFrameHandler(frame) {
 	}
 }
 
-stompClient.onConnect = (connectFrame) => {
+stompClient.onConnect = connectFrame => {
 	const roomSub = stompClient.subscribe('/room/myRoom', stompFrameHandler)
 }
 

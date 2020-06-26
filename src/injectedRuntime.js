@@ -18,7 +18,7 @@ const userID = cryptoRandomString({ length: 10, type: 'url-safe' })
 
 const port = chrome.runtime.connect('mmfgacfcjdhhobbicplipgeablenfego')
 
-port.onDisconnect.addListener((thisPort) => {
+port.onDisconnect.addListener(thisPort => {
 	const reason = chrome.runtime.lastError.message
 	console.debug('port disconnected', reason)
 })
@@ -30,7 +30,7 @@ function receiveSeek(event) {
 	moviePlayer.seekTo(event.mediaOffset)
 }
 
-port.onMessage.addListener((msg) => {
+port.onMessage.addListener(msg => {
 	console.debug('background->page', msg)
 
 	switch (msg.eventName) {
@@ -42,7 +42,7 @@ port.onMessage.addListener((msg) => {
 	}
 })
 
-videoElm.addEventListener('seeking', (seekingEvent) => {
+videoElm.addEventListener('seeking', seekingEvent => {
 	const mediaOffset = moviePlayer.getCurrentTime()
 
 	const seekingMessage = {

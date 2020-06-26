@@ -4,7 +4,7 @@ module.exports = {
 	mode: 'development',
 	devtool: 'inline-source-map',
 	entry: Object.fromEntries(
-		['background', 'contentScript', 'injectedRuntime'].map((entry) => [
+		['background', 'contentScript', 'injectedRuntime'].map(entry => [
 			entry,
 			`./src/${entry}`,
 		])
