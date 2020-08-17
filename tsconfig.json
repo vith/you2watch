@@ -1,0 +1,14 @@
+{
+	"compilerOptions": {
+		"outDir": "./tsDist/",
+		"noImplicitAny": true,
+		"module": "ESNext",
+		"target": "ESNext",
+		"jsx": "react",
+		"allowJs": false,
+		"moduleResolution": "node",
+		"allowSyntheticDefaultImports": true,
+		"typeRoots": ["node_modules/@types"],
+		"types": ["youtube", "chrome"]
+	}
+}

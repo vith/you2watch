@@ -10,6 +10,6 @@ export function debugEvent(eventName, emitter, collector) {
 			details = { ...details, collected }
 		}
 
-		console.log(eventName, details)
+		trace: eventName, details
 	})
 }
