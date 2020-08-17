@@ -1,5 +1,4 @@
-import { Client as StompClient, StompSubscription } from '@stomp/stompjs'
-import { extractVideoID } from './util/extractVideoID'
+import { Client as StompClient, StompSubscription, IMessage } from '@stomp/stompjs'
 
 const stompClient = new StompClient({
 	// brokerURL: 'wss://vith.n3t.work:444/ytsync',
@@ -7,51 +6,52 @@ const stompClient = new StompClient({
 	brokerURL: 'wss://ytsync.de.n3t.work/ws',
 })
 
-const pageMessageHandler = msg => {
-	const destination = `/room/${msg.roomID}`
+type RoomSubscriptionRecord = {
+	subscription: StompSubscription
+	roomID: String
+}
 
-	trace: `page->background->${destination}`, msg
+const stompSubs = new Map<chrome.runtime.Port, RoomSubscriptionRecord>()
 
-	const body = JSON.stringify(msg)
+const pageMessageHandler = (msg, port: chrome.runtime.Port) => {
+	const destination = `/room/${msg.roomID || msg.playbackState?.roomID}`
 
-	stompClient.publish({
-		destination,
-		body,
-	})
+	console.debug(`page->background->${destination}`, msg)
 
-	/* switch (msg.eventName) {
-		case 'seeking':
-			handleSeekingMessage(msg)
+	switch (msg.eventName) {
+		case 'subscribe':
+			trace: `subscribing to ${msg.roomID} for`, port
+
+			const oldSub = stompSubs.get(port)
+			if (oldSub) {
+				oldSub.subscription.unsubscribe()
+				stompSubs.set(port, null)
+			}
+
+			const roomSub = stompClient.subscribe(`/room/${msg.roomID}`, stompFrameHandler)
+			stompSubs.set(port, { subscription: roomSub, roomID: msg.roomID })
 			break
-		case 'videoChange':
-			handleVideoChange(msg)
+
+		case 'unsubscribe':
+			const sub = stompSubs.get(port)
+			trace: `unsubscribing from ${sub.roomID} for`, port
+
+			sub.subscription.unsubscribe()
+			stompSubs.set(port, null)
 			break
+
+		case 'sync':
+			const body = JSON.stringify(msg)
+			stompClient.publish({
+				destination,
+				body,
+			})
+			break
+
 		default:
 			throw new Error(`Unhandled page message type: ${msg.eventName}`)
-	} */
+	}
 }
-
-const handleSeekingMessage = seekingMessage => {
-	// const videoID = extractVideoID(port.sender.url)
-
-	trace: 'background->server', seekingMessage
-
-	stompClient.publish({
-		destination: `/room/${seekingMessage.roomID}/seek`,
-		body: JSON.stringify(seekingMessage),
-	})
-}
-
-const handleVideoChange = videoChangeMessage => {
-	trace: 'background->server', videoChangeMessage
-
-	stompClient.publish({
-		destination: `/room/${videoChangeMessage.roomID}/videoChange`,
-		body: JSON.stringify(videoChangeMessage),
-	})
-}
-
-let ports = []
 
 chrome.runtime.onConnectExternal.addListener(port => {
 	trace: 'background: port connected'
@@ -60,27 +60,29 @@ chrome.runtime.onConnectExternal.addListener(port => {
 
 	port.onDisconnect.addListener(disconnectedPort => {
 		// remove from ports list when disconnected
-		ports = ports.filter(port => port !== disconnectedPort)
+		// ports = ports.filter(port => port !== disconnectedPort)
+		const roomSub = stompSubs.get(port)
+		roomSub.subscription.unsubscribe()
+		stompSubs.delete(port)
 	})
 
 	// add to ports list
-	ports = [...ports, port]
+	stompSubs.set(port, null)
 })
 
-function stompFrameHandler(frame) {
+function stompFrameHandler(frame: IMessage) {
 	const message = JSON.parse(frame.body)
-	trace: 'server->background', { message, frame }
+	trace: 'server->background', { message, frame: frame }
 
-	// TODO: filter ports by roomID
-	for (const port of ports) {
-		port.postMessage(message)
+	for (const [port, sub] of stompSubs.entries()) {
+		if (sub?.roomID === message.roomID) {
+			port.postMessage(message)
+		}
 	}
 }
 
-const roomSubs = new Map<String, StompSubscription>()
-
-stompClient.onConnect = connectFrame => {
-	const roomSub = stompClient.subscribe('/room/myRoom', stompFrameHandler)
-}
+// stompClient.onConnect = connectFrame => {
+// 	const roomSub = stompClient.subscribe('/room/myRoom', stompFrameHandler)
+// }
 
 stompClient.activate()

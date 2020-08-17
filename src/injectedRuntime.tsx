@@ -13,6 +13,8 @@ import {
 	Icon,
 	Label,
 	Segment,
+	CheckboxProps,
+	InputOnChangeData,
 } from 'semantic-ui-react'
 import { NumericPlayerState, PlayerState, SyncState, toPlayerState } from './types'
 import { isSeekInitiatedByUser, isStateChangeInitiatedByUser } from './userIntentionDetectors'
@@ -144,8 +146,17 @@ class SyncUI extends React.Component<SyncUIProps, SyncUIState> {
 	}
 
 	shareState(playbackState: SyncState) {
+		if (!this.state.syncEnabled) return
+
 		trace: '%cSENDING STATE %o', 'color: lightblue; font-weight: bold;', playbackState
-		this.port.postMessage(playbackState)
+
+		const { roomID } = this.state
+
+		this.port.postMessage({
+			eventName: 'sync',
+			roomID,
+			playbackState,
+		})
 
 		if (playbackState.playerState !== PlayerState.BUFFERING) {
 			this.setState({
@@ -186,9 +197,23 @@ class SyncUI extends React.Component<SyncUIProps, SyncUIState> {
 		this.port.onMessage.addListener(this.onMessage)
 	}
 
-	handleFormChange = (e, { name, value }) => this.setState({ [name]: value })
+	handleFormChange = (
+		event: React.ChangeEvent<HTMLInputElement>,
+		{ name, value }: InputOnChangeData
+	) => this.setState({ [name]: value })
 
-	handleCheckboxChange = (e, { name, checked }) => this.setState({ [name]: checked })
+	handleSyncToggle = (
+		event: React.FormEvent<HTMLInputElement>,
+		{ name, checked }: CheckboxProps
+	) => {
+		const action = checked ? 'subscribe' : 'unsubscribe'
+		trace: `Issuing ${action} action for ${this.state.roomID}`
+		this.port.postMessage({
+			eventName: action,
+			roomID: this.state.roomID,
+		})
+		this.setState({ syncEnabled: checked })
+	}
 
 	render() {
 		const { lastSyncedState } = this
@@ -209,7 +234,7 @@ class SyncUI extends React.Component<SyncUIProps, SyncUIState> {
 										label="Enable synchronization"
 										name="syncEnabled"
 										checked={this.state.syncEnabled}
-										onChange={this.handleCheckboxChange}
+										onChange={this.handleSyncToggle}
 									/>
 								</FormGroup>
 								<FormGroup>
@@ -241,7 +266,13 @@ class SyncUI extends React.Component<SyncUIProps, SyncUIState> {
 		console.error('background port disconnected', reason)
 	}
 
-	onMessage(receivedState: SyncState) {
+	onMessage(event: { eventName: String }) {
+		if (event.eventName !== 'sync') {
+			throw new Error('unhandled event type')
+		}
+
+		const receivedState: SyncState = event.playbackState
+
 		const { playbackState } = this
 
 		// only react to state shared by others
