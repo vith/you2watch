@@ -26,6 +26,7 @@ interface SyncUIState {
 	localPlayerState: PlayerState
 	syncedStates: SyncState[]
 	syncEnabled: boolean
+	loadingVideoID: string
 }
 
 export class SyncUI extends React.Component<{}, SyncUIState> {
@@ -44,6 +45,7 @@ export class SyncUI extends React.Component<{}, SyncUIState> {
 			syncedStates: [],
 			localPlayerState: null,
 			syncEnabled: false,
+			loadingVideoID: null,
 		}
 		this.onSeeking = this.onSeeking.bind(this)
 		this.onStateChange = this.onStateChange.bind(this)
@@ -92,10 +94,21 @@ export class SyncUI extends React.Component<{}, SyncUIState> {
 	}
 
 	onStateChange(newStateCode: NumericPlayerState) {
+		// collect and prepare inputs
 		const newState: PlayerState = toPlayerState(newStateCode)
 		const { playbackState, lastSyncedState } = this
-
 		const previousState = this.state.localPlayerState
+
+		// handle special case: waiting for navigation to new video
+		const { loadingVideoID } = this.state
+		if (loadingVideoID) {
+			if (playbackState.videoID !== loadingVideoID) {
+				// ignore events for old video ID
+				return
+			}
+
+			this.setState({ loadingVideoID: null })
+		}
 
 		if (newState !== PlayerState.BUFFERING) {
 			this.setState({ localPlayerState: newState })
@@ -314,8 +327,14 @@ export class SyncUI extends React.Component<{}, SyncUIState> {
 		if (receivedState.videoID !== playbackState.videoID) {
 			// @ts-expect-error
 			trace: 'LOADING', receivedState
-			// this.moviePlayer.loadVideoById(receivedState.videoID)
-			document.location.href = `https://www.youtube.com/watch?v=${receivedState.videoID}`
+
+			this.setState({ loadingVideoID: receivedState.videoID })
+
+			// @ts-expect-error
+			document.querySelector('ytd-watch-flexy').fire('yt-navigate', {
+				endpoint: { watchEndpoint: { videoId: receivedState.videoID } },
+			})
+
 			return
 		}
 
@@ -348,6 +367,6 @@ export class SyncUI extends React.Component<{}, SyncUIState> {
 				return
 		}
 
-		console.error('unhandled onMessage')
+		console.error(`no handler for received playerState: ${receivedState.playerState}`)
 	}
 }
