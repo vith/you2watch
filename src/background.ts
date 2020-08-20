@@ -1,7 +1,7 @@
-import { Client as StompClient, StompSubscription, IMessage } from '@stomp/stompjs'
+import { Client as StompClient, IMessage, StompSubscription } from '@stomp/stompjs'
 import { MessagesFromPage } from './types/extensionMessages'
-import { asyncChromeStorageSyncGet } from './util/asyncChromeStorageSyncGet'
 import { assertUnreachable } from './util/assertUnreachable'
+import { asyncChromeStorageSyncGet } from './util/asyncChromeStorageSyncGet'
 
 const stompClient = new StompClient({
 	brokerURL: 'wss://ytsync.de.n3t.work/ws',

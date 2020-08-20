@@ -11,17 +11,12 @@ import {
 	InputOnChangeData,
 	Segment,
 } from 'semantic-ui-react'
-import { PlaybackState } from './PlaybackState'
-import { SyncState } from '../types/SyncState'
+import { ConfigGetResponse, MessagesFromBackground, SyncEvent } from '../types/extensionMessages'
 import { NumericPlayerState, PlayerState, toPlayerState } from '../types/PlayerState'
-import {
-	SyncEvent,
-	ConfigGetRequest,
-	MessagesFromBackground,
-	ConfigGetResponse,
-} from '../types/extensionMessages'
-import { isSeekInitiatedByUser, isStateChangeInitiatedByUser } from '../util/userIntentionDetectors'
+import { SyncState } from '../types/SyncState'
 import { querySelectorOne } from '../util/querySelectorOne'
+import { isSeekInitiatedByUser, isStateChangeInitiatedByUser } from '../util/userIntentionDetectors'
+import { PlaybackState } from './PlaybackState'
 
 interface SyncUIState {
 	loading: boolean
@@ -34,7 +29,7 @@ interface SyncUIState {
 }
 
 export class SyncUI extends React.Component<{}, SyncUIState> {
-	moviePlayer: YT.Player
+	moviePlayer: YT.Player & Element
 	videoElm: HTMLVideoElement
 	port: chrome.runtime.Port
 
@@ -46,8 +41,6 @@ export class SyncUI extends React.Component<{}, SyncUIState> {
 			roomID: null,
 			userID: null,
 			sessionID: cryptoRandomString({ length: 12, type: 'url-safe' }),
-			// roomID: cryptoRandomString({ length: 12, type: 'url-safe' }),
-			// userID: cryptoRandomString({ length: 6, type: 'url-safe' }),
 			syncedStates: [],
 			localPlayerState: null,
 			syncEnabled: false,
@@ -71,10 +64,11 @@ export class SyncUI extends React.Component<{}, SyncUIState> {
 	}
 
 	setupPlayerHandlers() {
-		this.moviePlayer = querySelectorOne(document, '#movie_player')
+		this.moviePlayer = querySelectorOne(document, '#movie_player') as YT.Player & Element
+		// @ts-expect-error: the external typings are wrong
 		this.moviePlayer.addEventListener('onStateChange', this.onStateChange)
 
-		this.videoElm = querySelectorOne(this.moviePlayer, 'video')
+		this.videoElm = querySelectorOne(this.moviePlayer, 'video') as HTMLVideoElement
 		this.videoElm.addEventListener('seeking', this.onSeeking)
 	}
 
@@ -109,7 +103,11 @@ export class SyncUI extends React.Component<{}, SyncUIState> {
 
 		console.debug(`onStateChange ${previousState} -> ${newState}`, playbackState)
 
-		const { byUser, decidedBy, reason } = isStateChangeInitiatedByUser(newState, this)
+		const { byUser, decidedBy, reason } = isStateChangeInitiatedByUser(
+			newState,
+			lastSyncedState,
+			playbackState
+		)
 
 		if (!byUser) {
 			console.debug('IGNORE', 'onStateChange', newState, 'due to:', reason, `(${decidedBy})`)
@@ -282,7 +280,7 @@ export class SyncUI extends React.Component<{}, SyncUIState> {
 	}
 
 	handleConfigGetResponse(event: ConfigGetResponse) {
-		// bug in typedefs for react?
+		// @ts-expect-error: bug in typedefs for react?
 		this.setState({
 			...event.items,
 			loading: false,
@@ -310,9 +308,11 @@ export class SyncUI extends React.Component<{}, SyncUIState> {
 			})
 		}
 
-		trace: '%cRECEIVED %o', 'color: green; font-weight: bold;', receivedState
+		// @ts-expect-error
+		trace: 'RECEIVED', receivedState
 
 		if (receivedState.videoID !== playbackState.videoID) {
+			// @ts-expect-error
 			trace: 'LOADING', receivedState
 			// this.moviePlayer.loadVideoById(receivedState.videoID)
 			document.location.href = `https://www.youtube.com/watch?v=${receivedState.videoID}`
@@ -321,7 +321,7 @@ export class SyncUI extends React.Component<{}, SyncUIState> {
 
 		switch (receivedState.playerState) {
 			case PlayerState.PLAYING:
-				trace: '<-sync playing at', receivedState.mediaOffset
+				trace: `<-sync playing at ${receivedState.mediaOffset}`
 				this.moviePlayer.seekTo(receivedState.mediaOffset, true)
 				this.moviePlayer.playVideo()
 				return
@@ -333,18 +333,15 @@ export class SyncUI extends React.Component<{}, SyncUIState> {
 				return
 
 			case PlayerState.BUFFERING:
-				trace: '%cremote is buffering', 'background-color: yellow', receivedState
+				// @ts-expect-error
+				trace: 'remote is buffering', receivedState
 				return
 
 			case PlayerState.UNSTARTED:
-				trace: '%cremote video is UNSTARTED %s',
-					'background-color: #d91abf',
-					receivedState.videoID
+				trace: `remote video is UNSTARTED ${receivedState.videoID}`
 
 				if (playbackState.videoID !== receivedState.videoID) {
-					trace: '%c SYNC loading new video %s',
-						'background-color: #d91abf',
-						receivedState.videoID
+					trace: `SYNC loading new video ${receivedState.videoID}`
 
 					this.moviePlayer.loadVideoById(receivedState.videoID)
 				}

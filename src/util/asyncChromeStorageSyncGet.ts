@@ -1,4 +1,4 @@
-import { Config } from "../types/Config"
+import { Config } from '../types/Config'
 
 export function asyncChromeStorageSyncGet(fields: (keyof Config)[]): Promise<Config> {
 	return new Promise(resolve => {
