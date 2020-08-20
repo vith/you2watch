@@ -1,7 +1,6 @@
 import { waitForElement } from './util/wait-for-element'
 
-// inject page script
-async function contentScript() {
+async function injectRuntime(/* config: Config */) {
 	const script = document.createElement('script')
 	script.src = chrome.runtime.getURL('injectedRuntime.js')
 
@@ -17,4 +16,4 @@ async function contentScript() {
 	head.appendChild(script)
 }
 
-contentScript()
+injectRuntime()

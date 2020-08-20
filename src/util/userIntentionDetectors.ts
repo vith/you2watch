@@ -1,22 +1,8 @@
-import { PlayerState } from './playerState'
+import { PlayerState } from '../types/playerState'
 
-export function isStateChangeInitiatedByUser(newState, syncService) {
+export function isStateChangeInitiatedByUser(newState: PlayerState, syncService) {
 	const deciders = {
-		/* ignoreBufferingWhenTryingToPlay(newState, syncService) {
-			const { lastSyncedState } = syncService
-
-			if (
-				newState === PlayerState.buffering &&
-				lastSyncedState.playerState === PlayerState.playing
-			) {
-				return {
-					byUser: false,
-					reason: 'buffering when trying to play',
-				}
-			}
-		}, */
-
-		ignoreTransitionToLastSyncedState(newState, syncService) {
+		ignoreTransitionToLastSyncedState(newState: PlayerState, syncService) {
 			const { lastSyncedState } = syncService
 
 			if (!lastSyncedState) {
@@ -35,11 +21,7 @@ export function isStateChangeInitiatedByUser(newState, syncService) {
 	return isInitiatedByUser(deciders, newState, syncService)
 }
 
-export function isSeekInitiatedByUser(
-	seekingEvent,
-	lastSyncedState,
-	currentState
-) {
+export function isSeekInitiatedByUser(seekingEvent, lastSyncedState, currentState) {
 	const deciders = {
 		noLastSyncedState(seekingEvent, lastSyncedState, currentState) {
 			if (!lastSyncedState) {
@@ -59,12 +41,7 @@ export function isSeekInitiatedByUser(
 		},
 	}
 
-	return isInitiatedByUser(
-		deciders,
-		seekingEvent,
-		lastSyncedState,
-		currentState
-	)
+	return isInitiatedByUser(deciders, seekingEvent, lastSyncedState, currentState)
 }
 
 function isInitiatedByUser(deciders, ...args) {

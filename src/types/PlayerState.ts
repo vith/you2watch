@@ -1,12 +1,3 @@
-export type SyncState = {
-	roomID: string
-	userID: string
-	videoID: string
-	mediaOffset: number
-	playerState: PlayerState
-	timestamp: number
-}
-
 export enum NumericPlayerState {
 	UNSTARTED = -1,
 	ENDED = 0,
