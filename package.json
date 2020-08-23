@@ -2,23 +2,35 @@
 	"name": "youtogether",
 	"version": "0.0.0",
 	"description": "Watch youtube videos together",
-	"scripts": {
-		"build": "webpack",
-		"watch": "webpack --watch"
+	"keywords": [
+		"youtube",
+		"sync"
+	],
+	"homepage": "https://github.com/vith/youtogether#readme",
+	"bugs": {
+		"url": "https://github.com/vith/youtogether/issues"
 	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/vith/youtogether.git"
 	},
-	"keywords": [
-		"youtube",
-		"sync"
-	],
 	"author": "Jason Papakostas <vithos@gmail.com>",
-	"bugs": {
-		"url": "https://github.com/vith/youtogether/issues"
+	"scripts": {
+		"build": "webpack",
+		"watch": "webpack --watch"
 	},
-	"homepage": "https://github.com/vith/youtogether#readme",
+	"browserslist": [
+		"last 1 chrome version"
+	],
+	"dependencies": {
+		"@stomp/stompjs": "^5.4.4",
+		"crypto-random-string": "^3.2.0",
+		"fomantic-ui-css": "^2.8.6",
+		"react": "^16.13.1",
+		"react-dom": "^16.13.1",
+		"react-timeago": "^4.4.0",
+		"semantic-ui-react": "^1.2.1"
+	},
 	"devDependencies": {
 		"@babel/core": "^7.11.1",
 		"@babel/plugin-proposal-class-properties": "^7.10.4",
@@ -41,17 +53,5 @@
 		"typescript": "^3.9.7",
 		"webpack": "^4.44.1",
 		"webpack-cli": "^3.3.12"
-	},
-	"dependencies": {
-		"@stomp/stompjs": "^5.4.4",
-		"crypto-random-string": "^3.2.0",
-		"fomantic-ui-css": "^2.8.6",
-		"react": "^16.13.1",
-		"react-dom": "^16.13.1",
-		"react-timeago": "^4.4.0",
-		"semantic-ui-react": "^1.2.1"
-	},
-	"browserslist": [
-		"last 1 chrome version"
-	]
+	}
 }
