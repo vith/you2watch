@@ -91,7 +91,7 @@ export class SyncUI extends React.Component<{}, SyncUIState> {
 			return
 		}
 
-		this.shareState(playbackState)
+		this.maybeShareState(playbackState)
 	}
 
 	onStateChange(newStateCode: NumericPlayerState) {
@@ -128,15 +128,19 @@ export class SyncUI extends React.Component<{}, SyncUIState> {
 			return
 		}
 
-		this.shareState(playbackState)
+		this.maybeShareState(playbackState)
 	}
 
-	shareState(playbackState: SyncState) {
-		if (!this.state.syncEnabled) return
+	maybeShareState(playbackState: SyncState = this.playbackState) {
+		if (this.state.syncEnabled) {
+			this.shareState(playbackState)
+		}
+	}
 
+	shareState(playbackState: SyncState = this.playbackState) {
 		console.debug('%cSENDING STATE %o', 'color: lightblue; font-weight: bold;', playbackState)
 
-		const { roomID } = this.state
+		const { roomID } = playbackState
 
 		this.port.postMessage({
 			type: 'sync',
@@ -222,17 +226,20 @@ export class SyncUI extends React.Component<{}, SyncUIState> {
 		})
 	}
 
-	handleSyncToggle = (
-		event: React.FormEvent<HTMLInputElement>,
-		{ name, checked }: CheckboxProps
-	) => {
-		const action = checked ? 'subscribe' : 'unsubscribe'
+	handleSyncToggle = (event: React.FormEvent<HTMLInputElement>, checkboxProps: CheckboxProps) => {
+		const syncEnabled = checkboxProps.checked
+		const action = syncEnabled ? 'subscribe' : 'unsubscribe'
+
 		trace: `Issuing ${action} action for ${this.state.roomID}`
+
 		this.port.postMessage({
 			type: action,
 			roomID: this.state.roomID,
 		})
-		this.setState({ syncEnabled: checked })
+
+		this.setState({ syncEnabled })
+
+		if (syncEnabled) this.shareState()
 	}
 
 	render() {
