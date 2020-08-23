@@ -11,6 +11,7 @@ import {
 	InputOnChangeData,
 	Segment,
 } from 'semantic-ui-react'
+import { pageScriptID } from '../contentScript'
 import { ConfigGetResponse, MessagesFromBackground, SyncEvent } from '../types/extensionMessages'
 import { NumericPlayerState, PlayerState, toPlayerState } from '../types/PlayerState'
 import { SyncState } from '../types/SyncState'
@@ -180,9 +181,19 @@ export class SyncUI extends React.Component<{}, SyncUIState> {
 	}
 
 	setupBackgroundPort() {
-		this.port = chrome.runtime.connect('mmfgacfcjdhhobbicplipgeablenfego')
-		this.port.onDisconnect.addListener(this.onPortDisconnect)
-		this.port.onMessage.addListener(this.onMessage)
+		const scriptElement = querySelectorOne(
+			document,
+			`script#${pageScriptID}`
+		) as HTMLScriptElement
+
+		const scriptSourceURL = new URL(scriptElement.src)
+		const extensionID = scriptSourceURL.host
+
+		const port = chrome.runtime.connect(extensionID)
+		port.onDisconnect.addListener(this.onPortDisconnect)
+		port.onMessage.addListener(this.onMessage)
+
+		this.port = port
 	}
 
 	handleRoomIDChange = (event: React.ChangeEvent<HTMLInputElement>, data: InputOnChangeData) => {

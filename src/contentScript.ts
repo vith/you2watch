@@ -1,8 +1,11 @@
 import { waitForElement } from './util/wait-for-element'
 
+export const pageScriptID = 'youtogether-page-script'
+
 async function injectRuntime(/* config: Config */) {
 	const script = document.createElement('script')
 	script.src = chrome.runtime.getURL('injectedRuntime.js')
+	script.id = pageScriptID
 
 	trace: 'waiting for html'
 	const html = await waitForElement(document, 'html')
