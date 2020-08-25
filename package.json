@@ -1,18 +1,18 @@
 {
-	"name": "youtogether",
+	"name": "youtoo-for-youtube",
 	"version": "0.0.0",
-	"description": "Watch youtube videos together",
+	"description": "YouToo for YouTube - Watch youtube videos together",
 	"keywords": [
 		"youtube",
 		"sync"
 	],
-	"homepage": "https://github.com/vith/youtogether#readme",
+	"homepage": "https://github.com/vith/youtoo-for-youtube#readme",
 	"bugs": {
-		"url": "https://github.com/vith/youtogether/issues"
+		"url": "https://github.com/vith/youtoo-for-youtube/issues"
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/vith/youtogether.git"
+		"url": "git+https://github.com/vith/youtoo-for-youtube.git"
 	},
 	"author": "Jason Papakostas <vithos@gmail.com>",
 	"scripts": {

@@ -1,7 +1,7 @@
 {
-	"name": "YouTogether",
+	"name": "YouToo for YouTube",
 	"version": "1.0",
-	"description": "Watch youtube videos together",
+	"description": "Watch YouTube videos together",
 	"manifest_version": 2,
 	"permissions": ["storage"],
 	"background": {
