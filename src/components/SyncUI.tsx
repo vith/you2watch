@@ -11,7 +11,7 @@ import {
 	InputOnChangeData,
 	Segment,
 } from 'semantic-ui-react'
-import { pageScriptID } from '../contentScript'
+import { pageScriptID } from '../constants'
 import { ConfigGetResponse, MessagesFromBackground, SyncEvent } from '../types/extensionMessages'
 import { NumericPlayerState, PlayerState, toPlayerState } from '../types/PlayerState'
 import { SyncState } from '../types/SyncState'

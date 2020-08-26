@@ -1,6 +1,5 @@
+import { pageScriptID } from './constants'
 import { waitForElement } from './util/wait-for-element'
-
-export const pageScriptID = 'youtoo-page-script'
 
 async function injectRuntime(/* config: Config */) {
 	const script = document.createElement('script')
