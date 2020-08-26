@@ -20,18 +20,22 @@ export async function waitForElement(
 			for (const mutationRecord of mutationsList) {
 				switch (mutationRecord.type) {
 					case 'childList':
-						const match = querySelectorOne(
-							assertParentNode(mutationRecord.target),
-							selector
-						)
-						if (match) {
+						try {
+							const match = querySelectorOne(
+								assertParentNode(mutationRecord.target),
+								selector
+							)
+
 							// @ts-expect-error
 							trace: 'found', { match, mutationRecord, selector }
 							resolve(match)
 							observer.disconnect()
 							return
+						} catch (e) {
+							// trace: 'no match', { mutationRecord, selector, e }
 						}
 						break
+
 					case 'attributes':
 						// mutatedNodes.push(mutationRecord.target)
 						break

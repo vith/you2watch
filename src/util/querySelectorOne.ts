@@ -1,11 +1,11 @@
 export function querySelectorOne(
-	baseElm: ParentNode,
-	...query: Parameters<ParentNode['querySelectorAll']>
+	searchRoot: ParentNode,
+	...selector: Parameters<ParentNode['querySelectorAll']>
 ) {
-	const matches = baseElm.querySelectorAll(...query)
+	const matches = searchRoot.querySelectorAll(...selector)
 
-	if (matches.length > 1) {
-		throw new Error('Expected at most one matching node for selector')
+	if (matches.length !== 1) {
+		throw new Error(`Expected exactly one matching node for selector ${selector}`)
 	}
 
 	return matches[0]
