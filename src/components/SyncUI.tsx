@@ -18,6 +18,7 @@ import { SyncState } from '../types/SyncState'
 import { querySelectorOne } from '../util/querySelectorOne'
 import { isSeekInitiatedByUser, isStateChangeInitiatedByUser } from '../util/userIntentionDetectors'
 import { PlaybackState } from './PlaybackState'
+import { waitForElement } from '../util/wait-for-element'
 
 interface SyncUIState {
 	loading: boolean
@@ -66,8 +67,9 @@ export class SyncUI extends React.Component<{}, SyncUIState> {
 		})
 	}
 
-	setupPlayerHandlers() {
-		this.moviePlayer = querySelectorOne(document, '#movie_player') as YT.Player & Element
+	async setupPlayerHandlers() {
+		const moviePlayerPromise = waitForElement(document, '#movie_player')
+		this.moviePlayer = (await moviePlayerPromise) as YT.Player & Element
 		// @ts-expect-error: the external typings are wrong
 		this.moviePlayer.addEventListener('onStateChange', this.onStateChange)
 
