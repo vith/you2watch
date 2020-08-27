@@ -23,6 +23,7 @@
 		"last 1 chrome version"
 	],
 	"dependencies": {
+		"@ant-design/icons": "^4.2.2",
 		"@stomp/stompjs": "^5.4.4",
 		"crypto-random-string": "^3.2.0",
 		"fomantic-ui-css": "^2.8.6",

@@ -1,0 +1,15 @@
+/* .youtoo-header-button {
+	margin: 8px;
+	height: 40px;
+} */
+
+#youtoo-topbar-root {
+	margin: 8px;
+	padding: 8px;
+	display: grid;
+	align-content: center;
+}
+
+#end.ytd-masthead {
+	min-width: calc(224px + 48px) !important;
+}

@@ -3,8 +3,9 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { SyncUI } from './components/SyncUI'
 import { waitForElement } from './util/wait-for-element'
+import { YouTubeHeaderButton } from './components/YouTubeHeaderButton'
 
-async function main() {
+async function oldComponent() {
 	trace: 'loading sync runtime'
 
 	const syncUiMountPoint = document.createElement('div')
@@ -27,4 +28,29 @@ async function main() {
 	trace: 'sync runtime loaded'
 }
 
-main()
+// oldComponent()
+
+async function loadTopBarUI() {
+	trace: 'injecting YouToo topbar UI'
+
+	const youTooRoot = document.createElement('div')
+	youTooRoot.id = 'youtoo-topbar-root'
+
+	// const logoSelector = '#masthead #start #logo'
+	// const parentSelector = '#masthead #buttons'
+	const createButtonSelector = '#masthead #buttons #button[aria-label="Create"]'
+	trace: `waiting for ${createButtonSelector}`
+	// const buttons = await waitForElement(document, parentSelector)
+	const createButton = await waitForElement(document, createButtonSelector)
+	const buttons = createButton.closest('#buttons')
+
+	// buttons.insertBefore(youTooMountPoint, buttons.firstChild)
+	// createButton.before(youTooRoot)
+	buttons.firstChild.before(youTooRoot)
+
+	ReactDOM.render(<YouTubeHeaderButton />, youTooRoot)
+
+	trace: 'YouToo loaded'
+}
+
+loadTopBarUI()
