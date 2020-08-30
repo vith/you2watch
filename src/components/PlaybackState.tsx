@@ -5,7 +5,7 @@ import { SyncState } from '../types/SyncState'
 
 export function PlaybackState(props: { data: SyncState }) {
 	const {
-		data: { roomID, userID, videoID, mediaOffset, playerState, timestamp },
+		data: { roomID, userID, videoID, mediaOffset, playerAction: playerState, timestamp },
 	} = props
 
 	const rowStyle = { margin: '0.35em' }

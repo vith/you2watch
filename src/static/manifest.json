@@ -15,7 +15,7 @@
 			"run_at": "document_start"
 		}
 	],
-	"web_accessible_resources": ["injectedRuntime.js", "fonts/*", "images/*"],
+	"web_accessible_resources": ["page.js", "fonts/*", "images/*"],
 	"externally_connectable": {
 		"matches": ["https://www.youtube.com/*"]
 	}

@@ -2,10 +2,10 @@ const CopyPlugin = require('copy-webpack-plugin')
 
 module.exports = {
 	mode: 'development',
-	// devtool: 'inline-source-map',
-	devtool: 'none',
+	devtool: 'inline-source-map',
+	// devtool: 'none',
 	entry: Object.fromEntries(
-		['background', 'contentScript', 'injectedRuntime'].map(entry => [entry, `./src/${entry}`])
+		['background', 'contentScript', 'page'].map(entry => [entry, `./src/entrypoints/${entry}`])
 	),
 	output: {
 		publicPath: 'chrome-extension://mmfgacfcjdhhobbicplipgeablenfego/',

@@ -9,23 +9,23 @@ import {
 	Grid,
 	GridColumn,
 	InputOnChangeData,
-	Segment,
+	Segment
 } from 'semantic-ui-react'
 import { pageScriptID } from '../constants'
 import { ConfigGetResponse, MessagesFromBackground, SyncEvent } from '../types/extensionMessages'
-import { NumericPlayerState, PlayerState, toPlayerState } from '../types/PlayerState'
+import { NumericPlaybackVerb, PlaybackVerb, toPlaybackVerb } from '../types/PlaybackVerb'
 import { SyncState } from '../types/SyncState'
-import { querySelectorOne } from '../util/querySelectorOne'
-import { isSeekInitiatedByUser, isStateChangeInitiatedByUser } from '../util/userIntentionDetectors'
+import { isSeekInitiatedByUser, isStateChangeInitiatedByUser } from '../types/userIntentionDetectors'
+import { querySelectorOne } from '../util/dom/querySelectorOne'
+import { waitForElement } from '../util/dom/waitForElement'
 import { PlaybackState } from './PlaybackState'
-import { waitForElement } from '../util/wait-for-element'
 
 interface SyncUIState {
 	loading: boolean
 	userID: string
 	roomID: string
 	sessionID: string
-	localPlayerState: PlayerState
+	localPlayerState: PlaybackVerb
 	syncedStates: SyncState[]
 	syncEnabled: boolean
 	loadingVideoID: string
@@ -96,9 +96,9 @@ export class SyncUI extends React.Component<{}, SyncUIState> {
 		this.maybeShareState(playbackState)
 	}
 
-	onStateChange(newStateCode: NumericPlayerState) {
+	onStateChange(newStateCode: NumericPlaybackVerb) {
 		// collect and prepare inputs
-		const newState: PlayerState = toPlayerState(newStateCode)
+		const newState: PlaybackVerb = toPlaybackVerb(newStateCode)
 		const { playbackState, lastSyncedState } = this
 		const previousState = this.state.localPlayerState
 
@@ -113,7 +113,7 @@ export class SyncUI extends React.Component<{}, SyncUIState> {
 			this.setState({ loadingVideoID: null })
 		}
 
-		if (newState !== PlayerState.BUFFERING) {
+		if (newState !== PlaybackVerb.BUFFERING) {
 			this.setState({ localPlayerState: newState })
 		}
 
@@ -150,99 +150,99 @@ export class SyncUI extends React.Component<{}, SyncUIState> {
 			playbackState,
 		})
 
-		if (playbackState.playerState !== PlayerState.BUFFERING) {
+		if (playbackState.playerAction !== PlaybackVerb.BUFFERING) {
 			this.setState({
 				syncedStates: [...this.state.syncedStates, playbackState],
 			})
 		}
 	}
 
-	get lastSyncedState() {
-		return this.state.syncedStates[this.state.syncedStates.length - 1]
-	}
+	/* 	get lastSyncedState() {
+			return this.state.syncedStates[this.state.syncedStates.length - 1]
+		} */
 
-	getCurrentVideoID(): string {
-		const videoURL = new URL(this.moviePlayer.getVideoUrl())
-		return videoURL.searchParams.get('v')
-	}
+	/* 	getCurrentVideoID(): string {
+			const videoURL = new URL(this.moviePlayer.getVideoUrl())
+			return videoURL.searchParams.get('v')
+		} */
 
-	getCurrentPlayerState(): PlayerState {
-		const ytCode: YT.PlayerState = this.moviePlayer.getPlayerState()
-		const code: NumericPlayerState = (ytCode as unknown) as NumericPlayerState
-		return toPlayerState(code)
-	}
+	/* 	getCurrentPlayerState(): PlaybackVerb {
+			const ytCode: YT.PlayerState = this.moviePlayer.getPlayerState()
+			const code: NumericPlaybackVerb = (ytCode as unknown) as NumericPlaybackVerb
+			return toPlaybackVerb(code)
+		} */
 
-	get playbackState(): SyncState {
-		const { roomID, userID, sessionID } = this.state
+	/* 	get playbackState(): SyncState {
+			const { roomID, userID, sessionID } = this.state
 
-		return {
-			roomID,
-			userID,
-			sessionID,
-			videoID: this.getCurrentVideoID(),
-			mediaOffset: this.moviePlayer.getCurrentTime(),
-			playerState: this.getCurrentPlayerState(),
-			timestamp: Date.now(),
-		}
-	}
+			return {
+				roomID,
+				userID,
+				sessionID,
+				videoID: this.getCurrentVideoID(),
+				mediaOffset: this.moviePlayer.getCurrentTime(),
+				playerAction: this.getCurrentPlayerState(),
+				timestamp: Date.now(),
+			}
+		} */
 
-	setupBackgroundPort() {
-		const scriptElement = querySelectorOne(
-			document,
-			`script#${pageScriptID}`
-		) as HTMLScriptElement
+	/* 	setupBackgroundPort() {
+			const scriptElement = querySelectorOne(
+				document,
+				`script#${pageScriptID}`
+			) as HTMLScriptElement
 
-		const scriptSourceURL = new URL(scriptElement.src)
-		const extensionID = scriptSourceURL.host
+			const scriptSourceURL = new URL(scriptElement.src)
+			const extensionID = scriptSourceURL.host
 
-		const port = chrome.runtime.connect(extensionID)
-		port.onDisconnect.addListener(this.onPortDisconnect)
-		port.onMessage.addListener(this.onMessage)
+			const port = chrome.runtime.connect(extensionID)
+			port.onDisconnect.addListener(this.onPortDisconnect)
+			port.onMessage.addListener(this.onMessage)
 
-		this.port = port
-	}
+			this.port = port
+		} */
 
-	handleRoomIDChange = (event: React.ChangeEvent<HTMLInputElement>, data: InputOnChangeData) => {
-		const items = {
-			roomID: data.value,
-		}
+	/* 	handleRoomIDChange = (event: React.ChangeEvent<HTMLInputElement>, data: InputOnChangeData) => {
+			const items = {
+				roomID: data.value,
+			}
 
-		this.port.postMessage({
-			type: 'config.set',
-			items,
-		})
+			this.port.postMessage({
+				type: 'config.set',
+				items,
+			})
 
-		this.setState(items)
-	}
+			this.setState(items)
+		} */
 
-	handleUserIDChange = (event: React.ChangeEvent<HTMLInputElement>, data: InputOnChangeData) => {
-		const userID = data.value
+	/* 	handleUserIDChange = (event: React.ChangeEvent<HTMLInputElement>, data: InputOnChangeData) => {
+			const userID = data.value
 
-		this.port.postMessage({
-			type: 'config.set',
-			items: { userID },
-		})
+			this.port.postMessage({
+				type: 'config.set',
+				items: { userID },
+			})
 
-		this.setState({
-			userID,
-		})
-	}
+			this.setState({
+				userID,
+			})
+		} */
 
-	handleSyncToggle = (event: React.FormEvent<HTMLInputElement>, checkboxProps: CheckboxProps) => {
-		const syncEnabled = checkboxProps.checked
-		const action = syncEnabled ? 'subscribe' : 'unsubscribe'
+	/* 	handleSyncToggle = (event: React.FormEvent<HTMLInputElement>, checkboxProps: CheckboxProps) => {
+			const syncEnabled = checkboxProps.checked
+			const action = syncEnabled ? 'subscribe' : 'unsubscribe'
 
-		trace: `Issuing ${action} action for ${this.state.roomID}`
+			trace: `Issuing ${action} action for ${this.state.roomID}`
 
-		this.port.postMessage({
-			type: action,
-			roomID: this.state.roomID,
-		})
+			this.port.postMessage({
+				type: action,
+				roomID: this.state.roomID,
+			})
 
-		this.setState({ syncEnabled })
+			this.setState({ syncEnabled })
 
-		if (syncEnabled) this.shareState()
-	}
+			if (syncEnabled) this.shareState()
+		} */
 
 	render() {
 		if (this.state.loading) {
@@ -320,7 +320,7 @@ export class SyncUI extends React.Component<{}, SyncUIState> {
 		})
 	}
 
-	handleSyncEvent(event: SyncEvent) {
+	/* handleSyncEvent(event: SyncEvent) {
 		const receivedState: SyncState = event.playbackState
 
 		const { playbackState } = this
@@ -335,7 +335,7 @@ export class SyncUI extends React.Component<{}, SyncUIState> {
 			return
 		}
 
-		if (receivedState.playerState !== PlayerState.BUFFERING) {
+		if (receivedState.playerAction !== PlaybackVerb.BUFFERING) {
 			this.setState({
 				syncedStates: [...this.state.syncedStates, receivedState],
 			})
@@ -358,25 +358,25 @@ export class SyncUI extends React.Component<{}, SyncUIState> {
 			return
 		}
 
-		switch (receivedState.playerState) {
-			case PlayerState.PLAYING:
+		switch (receivedState.playerAction) {
+			case PlaybackVerb.PLAYING:
 				trace: `<-sync playing at ${receivedState.mediaOffset}`
 				this.moviePlayer.seekTo(receivedState.mediaOffset, true)
 				this.moviePlayer.playVideo()
 				return
 
-			case PlayerState.PAUSED:
-				trace: `<-sync pausing at ${receivedState.mediaOffset} due to remote ${receivedState.playerState}`
+			case PlaybackVerb.PAUSED:
+				trace: `<-sync pausing at ${receivedState.mediaOffset} due to remote ${receivedState.playerAction}`
 				this.moviePlayer.pauseVideo()
 				this.moviePlayer.seekTo(receivedState.mediaOffset, true)
 				return
 
-			case PlayerState.BUFFERING:
+			case PlaybackVerb.BUFFERING:
 				// @ts-expect-error
 				trace: 'remote is buffering', receivedState
 				return
 
-			case PlayerState.UNSTARTED:
+			case PlaybackVerb.UNSTARTED:
 				trace: `remote video is UNSTARTED ${receivedState.videoID}`
 
 				if (playbackState.videoID !== receivedState.videoID) {
@@ -387,6 +387,6 @@ export class SyncUI extends React.Component<{}, SyncUIState> {
 				return
 		}
 
-		console.error(`no handler for received playerState: ${receivedState.playerState}`)
-	}
+		console.error(`no handler for received playerState: ${receivedState.playerAction}`)
+	} */
 }

@@ -1,4 +1,4 @@
-export enum NumericPlayerState {
+export enum NumericPlaybackVerb {
 	UNSTARTED = -1,
 	ENDED = 0,
 	PLAYING = 1,
@@ -7,7 +7,7 @@ export enum NumericPlayerState {
 	CUED = 5,
 }
 
-export enum PlayerState {
+export enum PlaybackVerb {
 	UNSTARTED = 'UNSTARTED',
 	ENDED = 'ENDED',
 	PLAYING = 'PLAYING',
@@ -16,6 +16,6 @@ export enum PlayerState {
 	CUED = 'CUED',
 }
 
-export function toPlayerState(code: NumericPlayerState): PlayerState {
-	return NumericPlayerState[code] as PlayerState
+export function toPlaybackVerb(code: NumericPlaybackVerb): PlaybackVerb {
+	return NumericPlaybackVerb[code] as PlaybackVerb
 }

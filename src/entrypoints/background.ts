@@ -1,7 +1,8 @@
 import { Client as StompClient, IMessage, StompSubscription } from '@stomp/stompjs'
-import { MessagesFromPage } from './types/extensionMessages'
-import { assertUnreachable } from './util/assertUnreachable'
-import { asyncChromeStorageSyncGet } from './util/asyncChromeStorageSyncGet'
+import { MessagesFromPage } from '../types/extensionMessages'
+import { assertUnreachable } from '../util/typescript/assertUnreachable'
+import { asyncChromeStorageSyncGet } from '../util/webExtension/asyncChromeStorageSyncGet'
+import { RoomID } from '../types/SyncState'
 
 const stompClient = new StompClient({
 	brokerURL: 'wss://ytsync.de.n3t.work/ws',
@@ -9,16 +10,17 @@ const stompClient = new StompClient({
 
 type RoomSubscriptionRecord = {
 	subscription: StompSubscription
-	roomID: String
+	roomID: RoomID
 }
 
 const stompSubs = new Map<chrome.runtime.Port, RoomSubscriptionRecord>()
 
 async function pageMessageHandler(event: MessagesFromPage, port: chrome.runtime.Port) {
 	switch (event.type) {
-		case 'subscribe':
+		case 'sync/subscribeToRoom':
+			const roomID = event.payload
 			// event = event as SubscribeEvent
-			trace: `subscribing to ${event.roomID} for ${port.name || '<unnamed port>'}`
+			trace: `subscribing to ${roomID} for ${port.name || '<unnamed port>'}`
 
 			const oldSub = stompSubs.get(port)
 			if (oldSub) {
@@ -26,20 +28,24 @@ async function pageMessageHandler(event: MessagesFromPage, port: chrome.runtime.
 				stompSubs.set(port, null)
 			}
 
-			const roomSub = stompClient.subscribe(`/room/${event.roomID}`, stompFrameHandler)
-			stompSubs.set(port, { subscription: roomSub, roomID: event.roomID })
+			const roomSub = stompClient.subscribe(`/room/${roomID}`, stompFrameHandler)
+			stompSubs.set(port, { subscription: roomSub, roomID })
 			return
 
-		case 'unsubscribe':
+		case 'sync/unsubscribeFromRoom':
 			const sub = stompSubs.get(port)
+
+			if (!sub)
+				return
+
 			trace: `unsubscribing from ${sub.roomID} for ${port.name || '<unnamed port>'}`
 
 			sub.subscription.unsubscribe()
 			stompSubs.set(port, null)
 			return
 
-		case 'sync':
-			const destination = `/room/${event.playbackState.roomID}`
+		case 'sync/syncStateWithPeers':
+			const destination = `/room/${event.payload.roomID}`
 
 			console.debug(`page->background->${destination}`, event)
 
@@ -63,7 +69,7 @@ async function pageMessageHandler(event: MessagesFromPage, port: chrome.runtime.
 			return
 
 		default:
-			assertUnreachable(event)
+		// assertUnreachable(event)
 	}
 }
 
@@ -87,10 +93,10 @@ chrome.runtime.onConnectExternal.addListener(port => {
 
 function stompFrameHandler(frame: IMessage) {
 	const message = JSON.parse(frame.body)
-	console.debug('server->background', { message, frame })
+	console.debug('server->background', message)
 
 	for (const [port, sub] of stompSubs.entries()) {
-		if (sub?.roomID === message.roomID) {
+		if (sub?.roomID === message.payload.roomID) {
 			port.postMessage(message)
 		}
 	}

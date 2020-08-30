@@ -1,9 +1,9 @@
-import { pageScriptID } from './constants'
-import { waitForElement } from './util/wait-for-element'
+import { pageScriptID } from '../constants'
+import { waitForElement } from '../util/dom/waitForElement'
 
-async function injectRuntime(/* config: Config */) {
+async function injectRuntime() {
 	const script = document.createElement('script')
-	script.src = chrome.runtime.getURL('injectedRuntime.js')
+	script.src = chrome.runtime.getURL('page.js')
 	script.id = pageScriptID
 
 	trace: 'waiting for html'

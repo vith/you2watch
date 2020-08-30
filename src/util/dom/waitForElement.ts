@@ -55,12 +55,12 @@ export async function waitForElement(
 		mutationObserver.observe(searchRoot, observerOptions)
 		// @ts-expect-error
 		trace: 'observing changes',
-			{
-				searchRoot,
-				selector,
-				observerOptions,
-				mutationObserver,
-			}
+		{
+			searchRoot,
+			selector,
+			observerOptions,
+			mutationObserver,
+		}
 	})
 }
 
