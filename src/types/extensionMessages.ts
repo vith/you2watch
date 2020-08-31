@@ -1,10 +1,15 @@
-import { SyncState, RoomID } from './SyncState'
+import {
+	RoomSubscribeAction,
+	RoomUnsubscribeAction,
+	SyncStateWithPeersAction,
+} from '../features/sync/sync'
 import { Config } from './Config'
-import { PayloadAction } from '@reduxjs/toolkit'
+import { SyncState } from './SyncState'
 
 export type MessagesFromPage =
-	| PayloadAction<SyncState>
-	| PayloadAction<RoomID>
+	| RoomSubscribeAction
+	| RoomUnsubscribeAction
+	| SyncStateWithPeersAction
 // | RoomSubscribeRequest
 // | RoomUnsubscribeRequest
 // | ConfigSetRequest

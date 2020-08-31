@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { toggleSync } from '../features/sync/thunks/toggleSync'
 import { saveRoomID, saveUserID } from '../state/config'
 import { RootState } from '../state/rootReducer'
-import { setSyncEnabled } from '../features/sync/thunks/setSyncEnabled'
 
 export function YouTooDropdown() {
 	const dispatch = useDispatch()
@@ -21,7 +21,7 @@ export function YouTooDropdown() {
 		setEditingRoomID(e.target.value)
 	const onChangeSyncEnabled = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { checked } = e.target
-		dispatch(setSyncEnabled(checked))
+		dispatch(toggleSync(checked))
 	}
 
 	const hasUserIDChange = editingUserID !== savedUserID

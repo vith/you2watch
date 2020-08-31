@@ -1,13 +1,10 @@
 import { PlaybackVerb } from './PlaybackVerb'
-import { PlayerState, SyncState } from './SyncState'
-import { playbackVerbChanged } from '../features/sync/thunks/playbackVerbChanged'
-
-// TODO: fix names, check that refactoring didn't break logic
+import { PlayerState } from './SyncState'
 
 type Decider<T_Event> = (
 	event: T_Event,
 	newPlayerState: PlayerState,
-	goalState: PlayerState,
+	goalState: PlayerState
 ) => DeciderDecision
 
 type DeciderDecision = {
@@ -29,16 +26,24 @@ export function isStateChangeInitiatedByUser(
 	goalState: PlayerState
 ): Decision {
 	const deciders: DeciderMap<PlaybackVerb> = {
-		ignoreBuffering(newPlaybackVerb: PlaybackVerb, newPlayerState: PlayerState, goalState: PlayerState): DeciderDecision {
+		ignoreBuffering(
+			newPlaybackVerb: PlaybackVerb,
+			newPlayerState: PlayerState,
+			goalState: PlayerState
+		): DeciderDecision {
 			if (newPlaybackVerb === PlaybackVerb.BUFFERING) {
 				return {
 					byUser: false,
-					reason: 'buffering'
+					reason: 'buffering',
 				}
 			}
 		},
 
-		ignoreTransitionToGoalState(newPlaybackVerb: PlaybackVerb, newPlayerState: PlayerState, goalState: PlayerState): DeciderDecision {
+		ignoreTransitionToGoalState(
+			newPlaybackVerb: PlaybackVerb,
+			newPlayerState: PlayerState,
+			goalState: PlayerState
+		): DeciderDecision {
 			if (!goalState) return
 
 			if (newPlaybackVerb === goalState.playbackVerb) {
@@ -50,7 +55,12 @@ export function isStateChangeInitiatedByUser(
 		},
 	}
 
-	return isInitiatedByUser(deciders, newPlaybackVerb, newPlayerState, goalState)
+	return isInitiatedByUser(
+		deciders,
+		newPlaybackVerb,
+		newPlayerState,
+		goalState
+	)
 }
 
 export function isSeekInitiatedByUser(
@@ -74,7 +84,10 @@ export function isSeekInitiatedByUser(
 			newPlayerState: PlayerState,
 			goalState: PlayerState
 		) {
-			if (Math.abs(newPlayerState.mediaOffset - goalState.mediaOffset) > 0.5) {
+			if (
+				Math.abs(newPlayerState.mediaOffset - goalState.mediaOffset) >
+				0.5
+			) {
 				return { byUser: true, reason: 'mediaOffset differs' }
 			} else {
 				return { byUser: false, reason: 'mediaOffset matches' }

@@ -1,9 +1,15 @@
 import { AppThunk } from '../../../state/store'
 import { isSeekInitiatedByUser } from '../../../types/userIntentionDetectors'
-import { createSyncableState, getCurrentPlayerState } from '../../../util/moviePlayer/getCurrentPlayerState'
+import {
+	createSyncableState,
+	getCurrentPlayerState,
+} from '../../../util/moviePlayer/getCurrentPlayerState'
 import { syncStateIfEnabled } from './syncStateIfEnabled'
 
-export const seeking = (seekingEvent: Event): AppThunk => (dispatch, getState) => {
+export const seeking = (seekingEvent: Event): AppThunk => (
+	dispatch,
+	getState
+) => {
 	const state = getState()
 	const { sessionID, goalState } = state.sync
 
