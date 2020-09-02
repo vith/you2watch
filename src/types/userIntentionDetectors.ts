@@ -26,6 +26,19 @@ export function isStateChangeInitiatedByUser(
 	goalState: PlayerState
 ): Decision {
 	const deciders: DeciderMap<PlaybackVerb> = {
+		ignoreUnloaded(
+			newPlaybackVerb: PlaybackVerb,
+			newPlayerState: PlayerState,
+			goalState: PlayerState
+		): DeciderDecision {
+			if (newPlaybackVerb === PlaybackVerb.UNSTARTED) {
+				return {
+					byUser: false,
+					reason: 'unloaded',
+				}
+			}
+		},
+
 		ignoreBuffering(
 			newPlaybackVerb: PlaybackVerb,
 			newPlayerState: PlayerState,

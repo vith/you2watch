@@ -46,15 +46,15 @@ export const syncSlice = createSlice<
 		},
 
 		subscribeToRoom: (state, action: RoomSubscribeAction) => {
-			postActionToBackground(state, action)
+			postActionToBackground(state.sessionID, action)
 		},
 
 		unsubscribeFromRoom: (state, action: RoomUnsubscribeAction) => {
-			postActionToBackground(state, action)
+			postActionToBackground(state.sessionID, action)
 		},
 
 		syncStateWithPeers: (state, action: SyncStateWithPeersAction) => {
-			postActionToBackground(state, action)
+			postActionToBackground(state.sessionID, action)
 
 			state.peerStates[action.payload.sessionID] = action.payload
 		},
@@ -69,11 +69,10 @@ export const syncSlice = createSlice<
 	},
 })
 
-function postActionToBackground<T>(
-	state: SyncSliceState,
-	action: PayloadAction<T>
+export function postActionToBackground<T_Payload>(
+	sessionID: SessionID,
+	action: PayloadAction<T_Payload>
 ) {
-	const { sessionID } = state
 	const { port } = GlobalStateContainer.getState(sessionID)
 
 	port.postMessage(action)

@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { connectToBackgroundScript } from '../features/connectToBackgroundScript'
 import { playbackVerbChanged } from '../features/sync/thunks/playbackVerbChanged'
 import { seeking } from '../features/sync/thunks/seeking'
+import { loadConfigFromBackground } from '../state/config'
 import { foundMoviePlayer, foundVideoElement } from '../state/domNodes'
 import { GlobalStateContainer } from '../state/notSafeForRedux'
 import { portConnected } from '../state/port'
@@ -14,6 +15,9 @@ import { waitForElement } from '../util/dom/waitForElement'
 import { YouTubeHeaderButton } from './YouTubeHeaderButton'
 
 export const YouTooApp = () => {
+	const [loading, setLoading] = useState(true)
+	const [port, setPort] = useState<chrome.runtime.Port>(null)
+
 	const dispatch = useDispatch()
 	const sessionID = useSelector((state: RootState) => state.sync.sessionID)
 
@@ -35,9 +39,20 @@ export const YouTooApp = () => {
 	/* EFFECTS */
 
 	function connectToBackgroundPortOnMountEffect() {
-		const port = connectToBackgroundScript(dispatch, sessionID)
-		GlobalStateContainer.setState(sessionID, { port })
+		const createdPort = connectToBackgroundScript(dispatch, sessionID)
+		GlobalStateContainer.setState(sessionID, { port: createdPort })
+		setPort(createdPort)
 		dispatch(portConnected(sessionID))
+	}
+
+	function loadConfigOnMountEffect() {
+		async function loadConfig() {
+			const configResponse = await dispatch(loadConfigFromBackground())
+			const config = configResponse.payload
+			console.log('loaded config', config)
+			setLoading(false)
+		}
+		loadConfig()
 	}
 
 	function watchPlayerOnMountEffect() {
@@ -77,9 +92,14 @@ export const YouTooApp = () => {
 
 
 	useEffect(connectToBackgroundPortOnMountEffect, [])
+	useEffect(loadConfigOnMountEffect, [])
 	useEffect(watchPlayerOnMountEffect, [])
 
 
 
-	return <YouTubeHeaderButton />
+	if (loading) {
+		return 'loading'
+	} else {
+		return <YouTubeHeaderButton />
+	}
 }

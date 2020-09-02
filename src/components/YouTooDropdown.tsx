@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { toggleSync } from '../features/sync/thunks/toggleSync'
-import { saveRoomID, saveUserID } from '../state/config'
+import { updateConfig } from '../state/config'
 import { RootState } from '../state/rootReducer'
 
 export function YouTooDropdown() {
@@ -32,10 +32,10 @@ export function YouTooDropdown() {
 		e.preventDefault()
 
 		if (hasUserIDChange)
-			dispatch(saveUserID(editingUserID))
+			dispatch(updateConfig({ userID: editingUserID }))
 
 		if (hasRoomID)
-			dispatch(saveRoomID(editingRoomID))
+			dispatch(updateConfig({ roomID: editingRoomID }))
 	}
 
 	return (

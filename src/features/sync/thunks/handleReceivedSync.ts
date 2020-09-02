@@ -28,6 +28,11 @@ export const handleSyncEvent = (receivedSync: SyncState): AppThunk => async (
 	// store received state in map by peer sessionID
 	dispatch(receiveSyncState(receivedSync))
 
+	if (!receivedSync.shouldFollow) {
+		// trace: `IGNORING RECEIVED ${remotePlayerState.playbackVerb} because shouldFollow was ${receivedSync.shouldFollow}`
+		return
+	}
+
 	trace: `RECEIVED ${new Date(
 		receivedSync.peerTimestamp
 	).toLocaleTimeString()} ${receivedSync.playerState.playbackVerb} ${
@@ -49,16 +54,11 @@ export const handleSyncEvent = (receivedSync: SyncState): AppThunk => async (
 		return
 	}
 
-	const { moviePlayer } = GlobalStateContainer.getState(localSessionID)
+	// @ts-expect-error
+	trace: 'UPDATING GOAL TO FOLLOW', remotePlayerState
+	dispatch(updateGoal(receivedSync))
 
-	if (!receivedSync.shouldFollow) {
-		trace: `IGNORING RECEIVED ${remotePlayerState.playbackVerb} because shouldFollow was ${receivedSync.shouldFollow}`
-		return
-	} else {
-		// @ts-expect-error
-		trace: 'UPDATING GOAL TO FOLLOW', remotePlayerState
-		dispatch(updateGoal(receivedSync))
-	}
+	const { moviePlayer } = GlobalStateContainer.getState(localSessionID)
 
 	switch (remotePlayerState.playbackVerb) {
 		case PlaybackVerb.PLAYING:
@@ -76,6 +76,7 @@ export const handleSyncEvent = (receivedSync: SyncState): AppThunk => async (
 		case PlaybackVerb.BUFFERING:
 			// @ts-expect-error
 			trace: 'remote is buffering', receivedSync
+			moviePlayer.seekTo(remotePlayerState.mediaOffset, true)
 			return
 
 		case PlaybackVerb.UNSTARTED:
@@ -86,6 +87,11 @@ export const handleSyncEvent = (receivedSync: SyncState): AppThunk => async (
 
 				moviePlayer.loadVideoById(remotePlayerState.videoID)
 			}
+			return
+
+		case PlaybackVerb.ENDED:
+			trace: `remote video ENDED ${remotePlayerState.videoID}`
+			moviePlayer.seekTo(Infinity, true)
 			return
 	}
 
