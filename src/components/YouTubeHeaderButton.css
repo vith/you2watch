@@ -11,6 +11,7 @@
 }
 
 #end.ytd-masthead {
+	/* create space for our button */
 	min-width: calc(224px + 48px) !important;
 }
 
@@ -23,4 +24,8 @@
 	border: 1px solid lightgrey;
 	background-color: white;
 	padding: 10px;
+}
+
+.youtoo-field {
+	margin-bottom: 0.5em;
 }

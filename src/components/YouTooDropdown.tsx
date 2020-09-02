@@ -40,14 +40,16 @@ export function YouTooDropdown() {
 
 	return (
 		<div className="youtoo-header-dropdown">
-			<input
-				type="checkbox"
-				name="syncEnabled"
-				checked={syncEnabled}
-				onChange={onChangeSyncEnabled}
-			/>
+			<div className="youtoo-field">
+				<input
+					type="checkbox"
+					name="syncEnabled"
+					checked={syncEnabled}
+					onChange={onChangeSyncEnabled}
+				/>
+			</div>
 			<form onSubmit={onSubmit}>
-				<div className="field">
+				<div className="youtoo-field">
 					<label htmlFor="userID">Username</label>
 					<input
 						type="text"
@@ -56,7 +58,7 @@ export function YouTooDropdown() {
 						onChange={onChangeUserID}
 					/>
 				</div>
-				<div className="field">
+				<div className="youtoo-field">
 					<label htmlFor="roomID">Room</label>
 					<input
 						type="text"
@@ -65,9 +67,11 @@ export function YouTooDropdown() {
 						onChange={onChangeRoomID}
 					/>
 				</div>
-				<button type="submit" disabled={!hasChanges}>
-					Save
-				</button>
+				<div className="youtoo-field">
+					<button type="submit" disabled={!hasChanges}>
+						Save
+					</button>
+				</div>
 			</form>
 		</div>
 	)
