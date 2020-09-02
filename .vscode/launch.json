@@ -9,7 +9,12 @@
 			"port": 9222,
 			"request": "attach",
 			"type": "pwa-chrome",
-			"webRoot": "${workspaceFolder}"
+			"webRoot": "${workspaceFolder}",
+			"skipFiles": [
+				"<node_internals>/**/*",
+				"${workspaceRoot}/node_modules/**/*",
+				"<eval>/**/*"
+			]
 		}
 	]
 }
