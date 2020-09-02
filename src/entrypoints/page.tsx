@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
 import { YouTooApp } from '../components/YouTooApp'
+import { YouTubeHeaderButton } from '../components/YouTubeHeaderButton'
 import { store } from '../state/store'
 import { waitForElement } from '../util/dom/waitForElement'
 
@@ -21,8 +22,12 @@ async function main() {
 
 	buttons.firstChild.before(youTooRoot)
 
+	const youTooApp = new YouTooApp()
+
+	await youTooApp.initialize()
+
 	ReactDOM.render((<Provider store={store}>
-		<YouTooApp />
+		<YouTubeHeaderButton />
 	</Provider>), youTooRoot)
 
 	trace: 'YouToo loaded'

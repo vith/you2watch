@@ -9,8 +9,7 @@ import { Config } from '../types/Config'
 import { MessagesFromBackground } from '../types/extensionMessages'
 import { SessionID } from '../types/SyncState'
 import { GlobalStateContainer } from './notSafeForRedux'
-import { RootState } from './rootReducer'
-import { AppDispatch, AppThunk } from './store'
+import { AppThunk, AppThunkApi } from './store'
 
 export type ConfigChangedAction = PayloadAction<Partial<Config>>
 
@@ -41,11 +40,6 @@ export const updateConfig = (
 
 export const configRequest = createAction('config/request')
 export const configResponse = createAction<Config>('config/response')
-
-type AppThunkApi = {
-	dispatch: AppDispatch
-	state: RootState
-}
 
 export const getConfig = createAsyncThunk<Config, void, AppThunkApi>(
 	'config/get',

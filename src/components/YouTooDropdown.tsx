@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { toggleSync } from '../features/sync/thunks/toggleSync'
 import { updateConfig } from '../state/config'
-import { RootState } from '../state/rootReducer'
+import { RootState } from '../state/store'
 
 export function YouTooDropdown() {
 	const dispatch = useDispatch()
