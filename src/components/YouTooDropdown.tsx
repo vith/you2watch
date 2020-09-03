@@ -1,19 +1,37 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
+import { useRootClose } from 'react-overlays'
 import { useDispatch, useSelector } from 'react-redux'
 import { toggleSync } from '../features/sync/thunks/toggleSync'
 import { updateConfig } from '../state/config'
 import { RootState } from '../state/store'
+import { YouTooLogger } from '../util/YouTooLogger'
 
-export function YouTooDropdown() {
+const log = YouTooLogger.extend(YouTooDropdown.name)
+
+type YouTooDropdownProps = {
+	closeDropdown: () => void
+}
+
+export function YouTooDropdown(props: YouTooDropdownProps) {
 	const dispatch = useDispatch()
+	const ref = useRef<HTMLDivElement>()
+
+	// TODO: check for leak?
+	// can't nest this in a useEffect to define dependency on ref
+	log('setting up useRootClose', ref.current)
+	useRootClose(ref, () => {
+		log('closing dropdown via useRootClose')
+		props.closeDropdown()
+	})
 
 	const savedUserID = useSelector((state: RootState) => state.config.userID)
 	const savedRoomID = useSelector((state: RootState) => state.config.roomID)
-	const syncEnabled = useSelector((state: RootState) => state.sync.syncEnabled)
+	const syncEnabled = useSelector(
+		(state: RootState) => state.sync.syncEnabled
+	)
 
 	const [editingUserID, setEditingUserID] = useState(savedUserID)
 	const [editingRoomID, setEditingRoomID] = useState(savedRoomID)
-
 
 	const onChangeUserID = (e: React.ChangeEvent<HTMLInputElement>) =>
 		setEditingUserID(e.target.value)
@@ -31,22 +49,23 @@ export function YouTooDropdown() {
 	const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
 
-		if (hasUserIDChange)
-			dispatch(updateConfig({ userID: editingUserID }))
-
-		if (hasRoomID)
-			dispatch(updateConfig({ roomID: editingRoomID }))
+		if (hasUserIDChange) dispatch(updateConfig({ userID: editingUserID }))
+		if (hasRoomID) dispatch(updateConfig({ roomID: editingRoomID }))
 	}
 
 	return (
-		<div className="youtoo-header-dropdown">
+		<div className="youtoo-header-dropdown" ref={ref}>
 			<div className="youtoo-field">
-				<input
-					type="checkbox"
-					name="syncEnabled"
-					checked={syncEnabled}
-					onChange={onChangeSyncEnabled}
-				/>
+				<label>
+					<input
+						type="checkbox"
+						name="syncEnabled"
+						id="syncEnabled"
+						checked={syncEnabled}
+						onChange={onChangeSyncEnabled}
+					/>
+					Enable sync
+				</label>
 			</div>
 			<form onSubmit={onSubmit}>
 				<div className="youtoo-field">

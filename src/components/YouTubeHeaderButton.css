@@ -27,7 +27,7 @@
 
 .youtoo-header-dropdown {
 	position: absolute;
-	height: 300px;
+	/* height: 300px; */
 	width: 200px;
 	margin-left: -53px;
 	margin-top: 17px;
@@ -38,4 +38,8 @@
 
 .youtoo-field {
 	margin-bottom: 0.5em;
+}
+
+button.youtoo-enabled {
+	background-color: rgb(157, 212, 181);
 }

@@ -1,4 +1,4 @@
-import { mountHeaderButton } from '../components/YouTubeHeaderButton'
+import { tenaciouslyMountHeaderUI } from '../components/YouTubeHeaderUI'
 import { YouTooLogger } from '../util/YouTooLogger'
 import { YouTooApp } from '../YouTooApp'
 
@@ -10,6 +10,6 @@ async function main() {
 	log('injecting YouToo topbar UI')
 	const youTooApp = new YouTooApp()
 	await youTooApp.initialize()
-	await mountHeaderButton()
+	await tenaciouslyMountHeaderUI()
 	log('YouToo loaded')
 }
