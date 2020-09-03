@@ -73,6 +73,7 @@ export function YouTooDropdown(props: YouTooDropdownProps) {
 					<input
 						type="text"
 						name="userID"
+						autoComplete="off"
 						value={editingUserID}
 						onChange={onChangeUserID}
 					/>
@@ -82,6 +83,7 @@ export function YouTooDropdown(props: YouTooDropdownProps) {
 					<input
 						type="text"
 						name="roomID"
+						autoComplete="off"
 						value={editingRoomID}
 						onChange={onChangeRoomID}
 					/>

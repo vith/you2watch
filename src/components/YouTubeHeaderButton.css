@@ -1,28 +1,33 @@
+:root {
+	--buttonBackgroundLightness: 94%;
+	--buttonBorderLightness: 73%;
+}
+
 .youtoo-header-button {
-	background-color: #fff;
-	border-color: #dbdbdb;
-	border-width: 1px;
-	color: #363636;
-	cursor: pointer;
-	justify-content: center;
-	padding-bottom: calc(0.5em - 1px);
-	padding-left: 1em;
-	padding-right: 1em;
-	padding-top: calc(0.5em - 1px);
-	text-align: center;
-	white-space: nowrap;
+	padding: 3px 6px;
+	background-color: hsl(0, 0%, var(--buttonBackgroundLightness));
+	border: 3px solid hsl(0, 0%, var(--buttonBorderLightness));
+	border-radius: 5px;
+}
+
+button.youtoo-enabled {
+	background-color: hsl(130, 40%, var(--buttonBackgroundLightness));
+	border-color: hsl(130, 40%, var(--buttonBorderLightness));
+}
+
+.youtoo-header-button > .anticon {
+	margin-left: 0.2em;
 }
 
 #youtoo-topbar-root {
-	margin: 8px;
-	padding: 8px;
+	padding: 0 8px;
 	display: grid;
 	align-content: center;
 }
 
 #end.ytd-masthead {
 	/* create space for our button */
-	min-width: calc(224px + 48px) !important;
+	min-width: calc(224px + 65px + 8px * 2) !important;
 }
 
 .youtoo-header-dropdown {
@@ -38,8 +43,4 @@
 
 .youtoo-field {
 	margin-bottom: 0.5em;
-}
-
-button.youtoo-enabled {
-	background-color: rgb(157, 212, 181);
 }
