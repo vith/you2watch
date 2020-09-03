@@ -1,6 +1,6 @@
-import { YouTooApp } from '../components/YouTooApp'
 import { mountHeaderButton } from '../components/YouTubeHeaderButton'
 import { YouTooLogger } from '../util/YouTooLogger'
+import { YouTooApp } from '../YouTooApp'
 
 const log = YouTooLogger.extend('page')
 
