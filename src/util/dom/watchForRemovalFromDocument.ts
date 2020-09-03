@@ -1,3 +1,7 @@
+import { YouTooLogger } from '../YouTooLogger'
+
+const log = YouTooLogger.extend(watchForRemovalFromDocument.name)
+
 export function watchForRemovalFromDocument(
 	element: Element
 ): Promise<MutationRecord> {
@@ -5,13 +9,19 @@ export function watchForRemovalFromDocument(
 		const observer = new MutationObserver((mutations: MutationRecord[]) => {
 			for (const mutation of mutations) {
 				for (const removedNode of mutation.removedNodes) {
-					if (isDescendant(element, removedNode)) {
+					if (
+						element === removedNode ||
+						isDescendant(element, removedNode)
+					) {
+						log('watched node detached from document', element)
 						observer.disconnect()
 						resolve(mutation)
 					}
 				}
 			}
 		})
+
+		log('beginning watch for element removal from document tree', element)
 
 		observer.observe(document, {
 			childList: true,
