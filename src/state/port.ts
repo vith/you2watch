@@ -1,10 +1,10 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { syncStateWithPeers } from '../features/sync/sync'
 import { handleSyncEvent } from '../features/sync/thunks/handleReceivedSync'
 import { MessagesFromBackground } from '../types/extensionMessages'
 import { findExtensionID } from '../util/webExtension/findExtensionID'
 import { GlobalStateContainer } from './notSafeForRedux'
-import { AppThunkApi } from './store'
+import { AppDispatch, RootState } from './store'
 
 // Not storing the port object in redux because it'll recursively crawl all
 // accessible properties on it to track changes. Instead it can be accessed
@@ -30,12 +30,10 @@ export const portSlice = createSlice({
 
 export const { portConnected, portDisconnected } = portSlice.actions
 
-export const connectToBackgroundScript = createAsyncThunk<
-	chrome.runtime.Port,
-	void,
-	AppThunkApi
->('port/connectToBackgroundScript', async (_, thunkApi) => {
-	const { getState, dispatch } = thunkApi
+export function connectToBackgroundScript(
+	dispatch: AppDispatch,
+	getState: () => RootState
+) {
 	const { sessionID } = getState().sync
 
 	const extensionID = findExtensionID()
@@ -60,4 +58,4 @@ export const connectToBackgroundScript = createAsyncThunk<
 	dispatch(portConnected())
 
 	return port
-})
+}

@@ -8,12 +8,8 @@ main()
 
 async function main() {
 	log('injecting YouToo topbar UI')
-
 	const youTooApp = new YouTooApp()
-
 	await youTooApp.initialize()
-
 	await mountHeaderButton()
-
 	log('YouToo loaded')
 }

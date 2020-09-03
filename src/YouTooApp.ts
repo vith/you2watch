@@ -1,7 +1,7 @@
 import { playbackVerbChanged } from './features/sync/thunks/playbackVerbChanged'
 import { seeking } from './features/sync/thunks/seeking'
 import { loadConfigFromBackground } from './state/config'
-import { foundMoviePlayer, foundVideoElement } from './state/domNodes'
+import { findMoviePlayer, findVideoElement } from './state/domNodes'
 import { connectToBackgroundScript } from './state/port'
 import { store } from './state/store'
 import {
@@ -11,14 +11,14 @@ import {
 } from './types/PlaybackVerb'
 import { SessionID } from './types/SyncState'
 import { YouTubeMoviePlayer } from './types/YouTubeMoviePlayer'
-import { querySelectorOne } from './util/dom/querySelectorOne'
-import { waitForElement } from './util/dom/waitForElement'
 import { YouTooLogger } from './util/YouTooLogger'
 
 const log = YouTooLogger.extend('YouTooApp')
 
+const { dispatch, getState } = store
+
 export class YouTooApp {
-	sessionID: SessionID = store.getState().sync.sessionID
+	sessionID: SessionID = getState().sync.sessionID
 	port: chrome.runtime.Port
 	moviePlayer: YouTubeMoviePlayer
 	videoElement: HTMLVideoElement
@@ -31,53 +31,44 @@ export class YouTooApp {
 	}
 
 	async connectBackgroundPort() {
-		const result = await store.dispatch(connectToBackgroundScript())
-		this.port = result.payload
+		this.port = connectToBackgroundScript(dispatch, getState)
 	}
 
 	async loadConfig() {
-		const configResponse = await store.dispatch(loadConfigFromBackground())
+		const configResponse = await dispatch(loadConfigFromBackground())
 		const config = configResponse.payload
 		log('loaded config', config)
 	}
 
 	async watchMoviePlayer() {
-		const { sessionID, onStateChange } = this
-		const moviePlayer = (await waitForElement(
-			document,
-			'#movie_player'
-		)) as YouTubeMoviePlayer
+		const { onStateChange } = this
+
+		const moviePlayer = await findMoviePlayer(document, store)
 
 		// @ts-expect-error: @types/youtube is wrong, at least for the official non-embed player
 		moviePlayer.addEventListener('onStateChange', onStateChange)
 
-		store.dispatch(foundMoviePlayer({ sessionID, moviePlayer }))
-
 		this.moviePlayer = moviePlayer
 	}
 
+	async watchVideoElement() {
+		const { moviePlayer, onSeeking } = this
+
+		const videoElement = await findVideoElement(moviePlayer, store)
+
+		videoElement.addEventListener('seeking', onSeeking)
+
+		this.videoElement = videoElement
+	}
 	onStateChange(newPlaybackVerbCode: NumericPlaybackVerb) {
 		const newPlaybackVerb: PlaybackVerb = toPlaybackVerb(
 			newPlaybackVerbCode
 		)
-		store.dispatch(playbackVerbChanged(newPlaybackVerb))
-	}
-
-	async watchVideoElement() {
-		const { moviePlayer, onSeeking, sessionID } = this
-		const videoElement = querySelectorOne(
-			moviePlayer,
-			'video'
-		) as HTMLVideoElement
-		videoElement.addEventListener('seeking', onSeeking)
-
-		store.dispatch(foundVideoElement({ sessionID, videoElement }))
-
-		this.videoElement = videoElement
+		dispatch(playbackVerbChanged(newPlaybackVerb))
 	}
 
 	onSeeking(seekingEvent: Event) {
-		store.dispatch(seeking(seekingEvent))
+		dispatch(seeking(seekingEvent))
 	}
 
 	destroy() {

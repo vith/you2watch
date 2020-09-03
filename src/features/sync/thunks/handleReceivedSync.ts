@@ -45,6 +45,9 @@ export function handleSyncEvent(receivedSync: SyncState): AppThunk {
 			new Date(receivedSync.peerTimestamp).toLocaleTimeString()
 		)
 
+		log('UPDATING GOAL TO FOLLOW', remotePlayerState)
+		dispatch(updateGoal(receivedSync))
+
 		if (remotePlayerState.videoID !== playbackState.videoID) {
 			log('FOLLOWING remote video change', receivedSync)
 
@@ -60,9 +63,6 @@ export function handleSyncEvent(receivedSync: SyncState): AppThunk {
 
 			return
 		}
-
-		log('UPDATING GOAL TO FOLLOW', remotePlayerState)
-		dispatch(updateGoal(receivedSync))
 
 		const { moviePlayer } = GlobalStateContainer.getState(localSessionID)
 

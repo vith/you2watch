@@ -26,15 +26,35 @@ export function isStateChangeInitiatedByUser(
 	goalState: PlayerState
 ): Decision {
 	const deciders: DeciderMap<PlaybackVerb> = {
-		ignoreUnloaded(
+		decipherUnstarted(
 			newPlaybackVerb: PlaybackVerb,
 			newPlayerState: PlayerState,
 			goalState: PlayerState
 		): DeciderDecision {
-			if (newPlaybackVerb === PlaybackVerb.UNSTARTED) {
+			if (newPlaybackVerb !== PlaybackVerb.UNSTARTED) return
+
+			if (newPlayerState.videoID !== goalState.videoID) {
+				return {
+					byUser: true,
+					reason: 'preparing to load new video',
+				}
+			} else {
 				return {
 					byUser: false,
-					reason: 'unloaded',
+					reason: 'UNSTARTED fires with old videoID when navigating',
+				}
+			}
+		},
+
+		ignoreCued(
+			newPlaybackVerb: PlaybackVerb,
+			newPlayerState: PlayerState,
+			goalState: PlayerState
+		): DeciderDecision {
+			if (newPlaybackVerb === PlaybackVerb.CUED) {
+				return {
+					byUser: false,
+					reason: 'CUED fires with old videoID when navigating',
 				}
 			}
 		},
@@ -47,7 +67,7 @@ export function isStateChangeInitiatedByUser(
 			if (newPlaybackVerb === PlaybackVerb.BUFFERING) {
 				return {
 					byUser: false,
-					reason: 'buffering',
+					reason: 'just buffering',
 				}
 			}
 		},

@@ -17,6 +17,7 @@ export function syncStateIfEnabled(syncableState: SyncState): AppThunk {
 
 		if (!syncEnabled) return
 
+		log('SHARING STATE', syncableState)
 		dispatch(syncStateWithPeers(syncableState))
 	}
 }
