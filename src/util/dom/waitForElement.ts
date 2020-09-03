@@ -1,5 +1,8 @@
+import { YouTooLogger } from '../YouTooLogger'
 import { assertParentNode } from './assertParentNode'
 import { querySelectorOne } from './querySelectorOne'
+
+const log = YouTooLogger.extend(waitForElement.name)
 
 export async function waitForElement(
 	searchRoot: Node & ParentNode,
@@ -16,7 +19,10 @@ export async function waitForElement(
 	}
 
 	return new Promise(resolve => {
-		const onMutation = (mutationsList: MutationRecord[], observer: MutationObserver) => {
+		const onMutation = (
+			mutationsList: MutationRecord[],
+			observer: MutationObserver
+		) => {
 			for (const mutationRecord of mutationsList) {
 				switch (mutationRecord.type) {
 					case 'childList':
@@ -26,13 +32,12 @@ export async function waitForElement(
 								selector
 							)
 
-							// @ts-expect-error
-							trace: 'found', { match, mutationRecord, selector }
+							log('found', { match, mutationRecord, selector })
 							resolve(match)
 							observer.disconnect()
 							return
 						} catch (e) {
-							// trace: 'no match', { mutationRecord, selector, e }
+							// log('no match', { mutationRecord, selector, e })
 						}
 						break
 
@@ -40,7 +45,9 @@ export async function waitForElement(
 						// mutatedNodes.push(mutationRecord.target)
 						break
 					default:
-						throw new Error(`Unhandled MutationRecord.type: ${mutationRecord.type}`)
+						throw new Error(
+							`Unhandled MutationRecord.type: ${mutationRecord.type}`
+						)
 				}
 			}
 		}
@@ -53,14 +60,12 @@ export async function waitForElement(
 
 		const mutationObserver = new MutationObserver(onMutation)
 		mutationObserver.observe(searchRoot, observerOptions)
-		// @ts-expect-error
-		trace: 'observing changes',
-		{
+		log('observing changes', {
 			searchRoot,
 			selector,
 			observerOptions,
 			mutationObserver,
-		}
+		})
 	})
 }
 
@@ -75,7 +80,9 @@ function getMutatedNodes(mutationsList: MutationRecord[]): Node[] {
 				mutatedNodes.push(mutationRecord.target)
 				break
 			default:
-				throw new Error(`Unhandled MutationRecord.type: ${mutationRecord.type}`)
+				throw new Error(
+					`Unhandled MutationRecord.type: ${mutationRecord.type}`
+				)
 		}
 	}
 	return mutatedNodes

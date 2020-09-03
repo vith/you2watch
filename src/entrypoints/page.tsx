@@ -1,10 +1,13 @@
 import { YouTooApp } from '../components/YouTooApp'
 import { mountHeaderButton } from '../components/YouTubeHeaderButton'
+import { YouTooLogger } from '../util/YouTooLogger'
+
+const log = YouTooLogger.extend('page')
 
 main()
 
 async function main() {
-	trace: 'injecting YouToo topbar UI'
+	log('injecting YouToo topbar UI')
 
 	const youTooApp = new YouTooApp()
 
@@ -12,5 +15,5 @@ async function main() {
 
 	await mountHeaderButton()
 
-	trace: 'YouToo loaded'
+	log('YouToo loaded')
 }

@@ -20,6 +20,9 @@ import {
 import { MessagesFromPage } from '../types/extensionMessages'
 import { RoomID } from '../types/SyncState'
 import { asyncChromeStorageSyncGet } from '../util/webExtension/asyncChromeStorageSyncGet'
+import { YouTooLogger } from '../util/YouTooLogger'
+
+const log = YouTooLogger.extend('background')
 
 const stompClient = new StompClient({
 	brokerURL: 'wss://ytsync.de.n3t.work/ws',
@@ -44,12 +47,16 @@ async function pageMessageHandler(
 
 			const portName = port.name || '<unnamed port>'
 
-			trace: `subscription request to ${roomID} for ${portName}`
+			log('subscription request to %j for %j', roomID, portName)
 
 			const oldSub = stompSubs.get(roomID)
 			if (oldSub) {
 				oldSub.ports = [...oldSub.ports, port]
-				trace: `added ${portName} to ports for existing subscription to ${roomID}`
+				log(
+					'added %j to ports for existing subscription to %j',
+					portName,
+					roomID
+				)
 			} else {
 				const subscription = stompClient.subscribe(
 					`/room/${roomID}`,
@@ -60,25 +67,10 @@ async function pageMessageHandler(
 					roomID,
 					ports: [port],
 				})
-				trace: `created new subscription to ${roomID} for ${portName}`
+				log('created new subscription to %j for %j', roomID, portName)
 			}
 
 			return
-
-			// const oldSub = stompSubs.get(port)
-			// if (oldSub) {
-			// 	oldSub.subscription.unsubscribe()
-			// 	stompSubs.set(port, null)
-			// }
-
-			// const roomSub = stompClient.subscribe(
-			// 	`/room/${roomID}`,
-			// 	stompFrameHandler
-			// )
-
-			// stompSubs.set(port, { subscription: roomSub, roomID })
-
-			// return
 		}
 
 		case unsubscribeFromRoom.type: {
@@ -89,7 +81,7 @@ async function pageMessageHandler(
 
 			const portName = port.name || '<unnamed port>'
 
-			trace: `unsubscribe request for ${sub.roomID} from ${portName}`
+			log('unsubscribe request for %j from %j', roomID, portName)
 
 			if (!sub) {
 				throw new Error('no such subscription exists')
@@ -98,7 +90,10 @@ async function pageMessageHandler(
 			sub.ports = sub.ports.filter(p => p !== port)
 
 			if (sub.ports.length === 0) {
-				trace: `no more ports need subscription to ${roomID}, really unsubscribing`
+				log(
+					'no more ports need subscription to %j, really unsubscribing',
+					roomID
+				)
 				sub.subscription.unsubscribe()
 				stompSubs.delete(roomID)
 			}
@@ -112,7 +107,7 @@ async function pageMessageHandler(
 
 			const destination = `/room/${roomID}`
 
-			console.debug(`page->background->${destination}`, event)
+			log(`page->background->${destination}`, event)
 
 			const body = JSON.stringify(event)
 			stompClient.publish({
@@ -144,37 +139,33 @@ async function pageMessageHandler(
 }
 
 chrome.runtime.onConnectExternal.addListener(port => {
-	trace: 'background: port connected'
+	log('background: port connected')
 
 	port.onMessage.addListener(pageMessageHandler)
 
 	port.onDisconnect.addListener((disconnectedPort: chrome.runtime.Port) => {
-		trace: `port disconnected: ${disconnectedPort.name || '<unnamed port>'}`
+		const portName = disconnectedPort.name || '<unnamed port>'
+		log('port disconnected: %j', portName)
 
 		for (const [roomID, subRecord] of stompSubs.entries()) {
 			if (subRecord.ports.includes(port)) {
 				subRecord.ports = subRecord.ports.filter(p => p !== port)
 				if (subRecord.ports.length === 0) {
-					trace: `last port gone for subscription to ${roomID}, unsubscribing`
+					log(
+						'last port gone for subscription to %j, unsubscribing',
+						roomID
+					)
 					subRecord.subscription.unsubscribe()
 					stompSubs.delete(roomID)
 				}
 			}
 		}
-
-		// unsubscribe from room and forget port
-		// const roomSub = stompSubs.get(port)
-		// roomSub.subscription.unsubscribe()
-		// stompSubs.delete(port)
 	})
-
-	// add to ports list
-	// stompSubs.set(port, null)
 })
 
 function stompFrameHandler(frame: IMessage) {
 	const message = JSON.parse(frame.body)
-	console.debug('server->background', message)
+	log('server->background', message)
 
 	const { roomID } = message.payload
 	const subRecord = stompSubs.get(roomID)
@@ -183,12 +174,6 @@ function stompFrameHandler(frame: IMessage) {
 			port.postMessage(message)
 		}
 	}
-
-	// for (const [port, sub] of stompSubs.entries()) {
-	// 	if (sub?.roomID === message.payload.roomID) {
-	// 		port.postMessage(message)
-	// 	}
-	// }
 }
 
 stompClient.activate()

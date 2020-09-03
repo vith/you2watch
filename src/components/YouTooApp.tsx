@@ -9,6 +9,9 @@ import { SessionID } from '../types/SyncState'
 import { YouTubeMoviePlayer } from '../types/YouTubeMoviePlayer'
 import { querySelectorOne } from '../util/dom/querySelectorOne'
 import { waitForElement } from '../util/dom/waitForElement'
+import { YouTooLogger } from '../util/YouTooLogger'
+
+const log = YouTooLogger.extend('YouTooApp')
 
 export class YouTooApp {
 	sessionID: SessionID = store.getState().sync.sessionID
@@ -31,7 +34,7 @@ export class YouTooApp {
 	async loadConfig() {
 		const configResponse = await store.dispatch(loadConfigFromBackground())
 		const config = configResponse.payload
-		console.log('loaded config', config)
+		log('loaded config', config)
 	}
 
 	async watchMoviePlayer() {
@@ -41,7 +44,6 @@ export class YouTooApp {
 		// @ts-expect-error: @types/youtube is wrong, at least for the official non-embed player
 		moviePlayer.addEventListener('onStateChange', onStateChange)
 
-		// GlobalStateContainer.setState(sessionID, { moviePlayer })
 		store.dispatch(foundMoviePlayer({ sessionID, moviePlayer }))
 
 		this.moviePlayer = moviePlayer
@@ -57,7 +59,6 @@ export class YouTooApp {
 		const videoElement = querySelectorOne(moviePlayer, 'video') as HTMLVideoElement
 		videoElement.addEventListener('seeking', onSeeking)
 
-		// GlobalStateContainer.setState(sessionID, { videoElement })
 		store.dispatch(foundVideoElement({ sessionID, videoElement }))
 
 		this.videoElement = videoElement

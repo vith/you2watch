@@ -4,31 +4,38 @@ import {
 	createSyncableState,
 	getCurrentPlayerState,
 } from '../../../util/moviePlayer/getCurrentPlayerState'
+import { YouTooLogger } from '../../../util/YouTooLogger'
 import { syncStateIfEnabled } from './syncStateIfEnabled'
 
-export const seeking = (seekingEvent: Event): AppThunk => (
-	dispatch,
-	getState
-) => {
-	const state = getState()
-	const { sessionID, goalState } = state.sync
+const log = YouTooLogger.extend(seeking.name)
 
-	const newPlayerState = getCurrentPlayerState(sessionID)
+export function seeking(seekingEvent: Event): AppThunk {
+	return function seekingExecutor(dispatch, getState) {
+		const state = getState()
+		const { sessionID, goalState } = state.sync
 
-	console.debug('onSeeking', seekingEvent, newPlayerState)
+		const newPlayerState = getCurrentPlayerState(sessionID)
 
-	const { byUser, decidedBy, reason } = isSeekInitiatedByUser(
-		seekingEvent,
-		newPlayerState,
-		goalState.playerState
-	)
+		log('onSeeking', seekingEvent, newPlayerState)
 
-	if (!byUser) {
-		trace: `IGNORE seeking ${seekingEvent} due to: ${reason} (${decidedBy})`
-		return
+		const { byUser, decidedBy, reason } = isSeekInitiatedByUser(
+			seekingEvent,
+			newPlayerState,
+			goalState.playerState
+		)
+
+		if (!byUser) {
+			log(
+				'IGNORE seeking %o due to: %s (%s)',
+				seekingEvent,
+				reason,
+				decidedBy
+			)
+			return
+		}
+
+		const syncableState = createSyncableState(newPlayerState, state)
+
+		dispatch(syncStateIfEnabled(syncableState))
 	}
-
-	const syncableState = createSyncableState(newPlayerState, state)
-
-	dispatch(syncStateIfEnabled(syncableState))
 }

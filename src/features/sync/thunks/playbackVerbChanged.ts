@@ -5,48 +5,56 @@ import {
 	createSyncableState,
 	getCurrentPlayerState,
 } from '../../../util/moviePlayer/getCurrentPlayerState'
+import { YouTooLogger } from '../../../util/YouTooLogger'
 import { loadingVideo } from '../sync'
 import { handleSyncEvent } from './handleReceivedSync'
 import { syncStateIfEnabled } from './syncStateIfEnabled'
 
-export const playbackVerbChanged = (
-	newPlaybackVerb: PlaybackVerb
-): AppThunk => async (dispatch, getState) => {
-	const state = getState()
-	const { goalState, loadingVideoID, sessionID } = state.sync
-	const newPlayerState = getCurrentPlayerState(sessionID)
+const log = YouTooLogger.extend(playbackVerbChanged.name)
 
-	// special case: during navigation to new video
-	if (loadingVideoID) {
-		if (newPlayerState.videoID !== loadingVideoID) {
-			return // ignore events for old video ID (racey)
-		} else {
-			// anticipated video is now loaded.
+export function playbackVerbChanged(newPlaybackVerb: PlaybackVerb): AppThunk {
+	return async function playbackVerbChangedExecutor(dispatch, getState) {
+		const state = getState()
+		const { goalState, loadingVideoID, sessionID } = state.sync
+		const newPlayerState = getCurrentPlayerState(sessionID)
 
-			// clear loadingVideoID field
-			dispatch(loadingVideo(null))
+		// special case: during navigation to new video
+		if (loadingVideoID) {
+			if (newPlayerState.videoID !== loadingVideoID) {
+				return // ignore events for old video ID (racey)
+			} else {
+				// anticipated video is now loaded.
 
-			// re-dispatch last goal state, to sync to it now that we have the
-			// right video loaded
-			dispatch(handleSyncEvent(state.sync.goalState))
+				// clear loadingVideoID field
+				dispatch(loadingVideo(null))
+
+				// re-dispatch last goal state, to sync to it now that we have the
+				// right video loaded
+				dispatch(handleSyncEvent(state.sync.goalState))
+			}
 		}
-	}
 
-	const syncableState = createSyncableState(newPlayerState, state)
+		const syncableState = createSyncableState(newPlayerState, state)
 
-	if (goalState) {
-		const { byUser, decidedBy, reason } = isStateChangeInitiatedByUser(
-			newPlaybackVerb,
-			newPlayerState,
-			goalState.playerState
-		)
+		if (goalState) {
+			const { byUser, decidedBy, reason } = isStateChangeInitiatedByUser(
+				newPlaybackVerb,
+				newPlayerState,
+				goalState.playerState
+			)
 
-		syncableState.shouldFollow = byUser
+			syncableState.shouldFollow = byUser
 
-		if (!byUser) {
-			trace: `[${decidedBy}] IGNORE onStateChange ${newPlaybackVerb}: ${reason}`
+			if (!byUser) {
+				log(
+					'[%s] IGNORE onStateChange %s: %s',
+					decidedBy,
+					newPlaybackVerb,
+					reason
+				)
+			}
 		}
-	}
 
-	dispatch(syncStateIfEnabled(syncableState))
+		dispatch(syncStateIfEnabled(syncableState))
+	}
 }

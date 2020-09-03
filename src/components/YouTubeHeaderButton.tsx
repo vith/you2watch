@@ -5,8 +5,11 @@ import { Provider } from 'react-redux'
 import { store } from '../state/store'
 import { waitForElement } from '../util/dom/waitForElement'
 import { watchForRemovalFromDocument } from '../util/dom/watchForRemovalFromDocument'
+import { YouTooLogger } from '../util/YouTooLogger'
 import { YouTooDropdown } from './YouTooDropdown'
 import './YouTubeHeaderButton.css'
+
+const log = YouTooLogger.extend(YouTubeHeaderButton.name)
 
 export function YouTubeHeaderButton() {
 	const ref = useRef(null)
@@ -14,7 +17,7 @@ export function YouTubeHeaderButton() {
 	useEffect(() => {
 		watchForRemovalFromDocument(ref.current).then(
 			async (removalMutation: MutationRecord) => {
-				warn: 'YouTubeHeaderButton was removed from DOM. Reinjecting.'
+				log('YouTubeHeaderButton was removed from DOM. Reinjecting.')
 				await mountHeaderButton()
 			}
 		)
@@ -35,7 +38,7 @@ export async function mountHeaderButton() {
 	youTooRoot.id = 'youtoo-topbar-root'
 
 	const createButtonSelector = '#masthead #buttons #button[aria-label="Create"]'
-	trace: `waiting for ${createButtonSelector}`
+	log('waiting for', createButtonSelector)
 
 	const createButton = await waitForElement(document, createButtonSelector)
 	const buttons = createButton.closest('#buttons')

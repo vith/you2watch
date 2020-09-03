@@ -1,20 +1,23 @@
 import { pageScriptID } from '../constants'
 import { waitForElement } from '../util/dom/waitForElement'
+import { YouTooLogger } from '../util/YouTooLogger'
+
+const log = YouTooLogger.extend('contentScript')
 
 async function injectRuntime() {
 	const script = document.createElement('script')
 	script.src = chrome.runtime.getURL('page.js')
 	script.id = pageScriptID
 
-	trace: 'waiting for html'
+	log('waiting for html')
 	const html = await waitForElement(document, 'html')
-	trace: 'found html'
+	log('found html')
 
-	trace: 'waiting for head'
+	log('waiting for head')
 	const head = await waitForElement(html, 'head')
-	trace: 'found head'
+	log('found head')
 
-	trace: 'injecting script'
+	log('injecting script')
 	head.appendChild(script)
 }
 
