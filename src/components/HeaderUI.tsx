@@ -33,12 +33,10 @@ export async function mountHeaderUI(): Promise<HTMLDivElement> {
 	const you2watchRoot = document.createElement('div')
 	you2watchRoot.id = 'you2watch-topbar-root'
 
-	const createButtonSelector =
-		'#masthead #buttons #button[aria-label="Create"]'
-	log('waiting for', createButtonSelector)
+	const buttonsSelector = '#masthead #buttons'
+	log('waiting for %j', buttonsSelector)
 
-	const createButton = await waitForElement(document, createButtonSelector)
-	const buttons = createButton.closest('#buttons')
+	const buttons = await waitForElement(document, buttonsSelector)
 
 	buttons.firstChild.before(you2watchRoot)
 
