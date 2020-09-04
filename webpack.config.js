@@ -1,3 +1,4 @@
+const path = require('path')
 const CopyPlugin = require('copy-webpack-plugin')
 
 module.exports = {
@@ -5,10 +6,14 @@ module.exports = {
 	devtool: 'inline-source-map',
 	// devtool: 'none',
 	entry: Object.fromEntries(
-		['background', 'contentScript', 'page'].map(entry => [entry, `./src/entrypoints/${entry}`])
+		['background', 'contentScript', 'page'].map(entry => [
+			entry,
+			`./src/entrypoints/${entry}`,
+		])
 	),
 	output: {
 		publicPath: 'chrome-extension://mmfgacfcjdhhobbicplipgeablenfego/',
+		path: path.resolve(__dirname, 'build/unpacked'),
 	},
 	resolve: {
 		extensions: ['.ts', '.tsx', '.js', '.jsx'],
