@@ -16,11 +16,11 @@
 	},
 	"author": "Jason Papakostas <vithos@gmail.com>",
 	"scripts": {
-		"clean": "rimraf ./build/unpacked",
 		"build": "webpack",
-		"watch": "webpack --watch",
 		"build:pack": "node ./scripts/pack-extension-zip.mjs",
-		"pack": "npm-run-all clean build build:pack"
+		"clean": "rimraf ./build/unpacked",
+		"pack": "npm-run-all clean build build:pack",
+		"watch": "webpack --watch"
 	},
 	"browserslist": [
 		"last 1 chrome version"
