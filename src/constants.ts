@@ -1,1 +1,1 @@
-export const pageScriptID = 'youtoo-page-script'
+export const pageScriptID = 'you2watch-page-script'

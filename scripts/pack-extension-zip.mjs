@@ -1,4 +1,3 @@
-// require modules
 import archiver from 'archiver'
 import execa from 'execa'
 import filenamify from 'filenamify'
@@ -7,14 +6,15 @@ import path from 'path'
 import pkgDir from 'pkg-dir'
 import prettyBytes from 'pretty-bytes'
 import prettyMs from 'pretty-ms'
+import readPkg from 'read-pkg'
 
 const startTime = Date.now()
+const pkg = readPkg.sync()
 
 packExtensionZip()
 
 function packExtensionZip() {
-	const version = ver()
-	const filename = `youtoo-${version}.zip`
+	const filename = `${pkg.name}-${ver()}.zip`
 	const pkgRoot = pkgDir.sync()
 	const outputPath = path.join(pkgRoot, 'build', filename)
 

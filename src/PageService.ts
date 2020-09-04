@@ -11,13 +11,13 @@ import {
 } from './types/PlaybackVerb'
 import { SessionID } from './types/SyncState'
 import { YouTubeMoviePlayer } from './types/YouTubeMoviePlayer'
-import { YouTooLogger } from './util/YouTooLogger'
+import { baseLog } from './util/logging'
 
-const log = YouTooLogger.extend('YouTooApp')
+const log = baseLog.extend('you2watchApp')
 
 const { dispatch, getState } = store
 
-export class YouTooApp {
+export class PageService {
 	sessionID: SessionID = getState().sync.sessionID
 	port: chrome.runtime.Port
 	moviePlayer: YouTubeMoviePlayer

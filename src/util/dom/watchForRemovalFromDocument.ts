@@ -1,6 +1,6 @@
-import { YouTooLogger } from '../YouTooLogger'
+import { baseLog } from '../logging'
 
-const log = YouTooLogger.extend(watchForRemovalFromDocument.name)
+const log = baseLog.extend(watchForRemovalFromDocument.name)
 
 export function watchForRemovalFromDocument(
 	element: Element

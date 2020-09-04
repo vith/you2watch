@@ -4,15 +4,15 @@ import { useDispatch, useSelector } from 'react-redux'
 import { toggleSync } from '../features/sync/thunks/toggleSync'
 import { updateConfig } from '../state/config'
 import { RootState } from '../state/store'
-import { YouTooLogger } from '../util/YouTooLogger'
+import { baseLog } from '../util/logging'
 
-const log = YouTooLogger.extend(YouTooDropdown.name)
+const log = baseLog.extend(HeaderDropdown.name)
 
-type YouTooDropdownProps = {
+type HeaderDropdownProps = {
 	closeDropdown: () => void
 }
 
-export function YouTooDropdown(props: YouTooDropdownProps) {
+export function HeaderDropdown(props: HeaderDropdownProps) {
 	const dispatch = useDispatch()
 	const ref = useRef<HTMLDivElement>()
 
@@ -54,8 +54,8 @@ export function YouTooDropdown(props: YouTooDropdownProps) {
 	}
 
 	return (
-		<div className="youtoo-header-dropdown" ref={ref}>
-			<div className="youtoo-field">
+		<div className="you2watch-header-dropdown" ref={ref}>
+			<div className="you2watch-field">
 				<label>
 					<input
 						type="checkbox"
@@ -68,7 +68,7 @@ export function YouTooDropdown(props: YouTooDropdownProps) {
 				</label>
 			</div>
 			<form onSubmit={onSubmit}>
-				<div className="youtoo-field">
+				<div className="you2watch-field">
 					<label htmlFor="userID">Username</label>
 					<input
 						type="text"
@@ -78,7 +78,7 @@ export function YouTooDropdown(props: YouTooDropdownProps) {
 						onChange={onChangeUserID}
 					/>
 				</div>
-				<div className="youtoo-field">
+				<div className="you2watch-field">
 					<label htmlFor="roomID">Room</label>
 					<input
 						type="text"
@@ -88,7 +88,7 @@ export function YouTooDropdown(props: YouTooDropdownProps) {
 						onChange={onChangeRoomID}
 					/>
 				</div>
-				<div className="youtoo-field">
+				<div className="you2watch-field">
 					<button type="submit" disabled={!hasChanges}>
 						Save
 					</button>

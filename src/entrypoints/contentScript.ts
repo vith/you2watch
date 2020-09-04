@@ -1,8 +1,8 @@
 import { pageScriptID } from '../constants'
 import { waitForElement } from '../util/dom/waitForElement'
-import { YouTooLogger } from '../util/YouTooLogger'
+import { baseLog } from '../util/logging'
 
-const log = YouTooLogger.extend('contentScript')
+const log = baseLog.extend('contentScript')
 
 async function injectRuntime() {
 	const script = document.createElement('script')

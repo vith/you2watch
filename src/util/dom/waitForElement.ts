@@ -1,8 +1,8 @@
-import { YouTooLogger } from '../YouTooLogger'
+import { baseLog } from '../logging'
 import { assertParentNode } from './assertParentNode'
 import { querySelectorOne } from './querySelectorOne'
 
-const log = YouTooLogger.extend(waitForElement.name)
+const log = baseLog.extend(waitForElement.name)
 
 export async function waitForElement(
 	searchRoot: Node & ParentNode,

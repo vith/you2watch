@@ -1,16 +1,16 @@
 import { AppThunk } from '../../../state/store'
 import { PlaybackVerb } from '../../../types/PlaybackVerb'
 import { isStateChangeInitiatedByUser } from '../../../types/userIntentionDetectors'
+import { baseLog } from '../../../util/logging'
 import {
 	createSyncableState,
 	getCurrentPlayerState,
 } from '../../../util/moviePlayer/getCurrentPlayerState'
-import { YouTooLogger } from '../../../util/YouTooLogger'
 import { loadingVideo } from '../sync'
 import { handleSyncEvent } from './handleReceivedSync'
 import { syncStateIfEnabled } from './syncStateIfEnabled'
 
-const log = YouTooLogger.extend(playbackVerbChanged.name)
+const log = baseLog.extend(playbackVerbChanged.name)
 
 export function playbackVerbChanged(newPlaybackVerb: PlaybackVerb): AppThunk {
 	return async function playbackVerbChangedExecutor(dispatch, getState) {

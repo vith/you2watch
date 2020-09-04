@@ -3,21 +3,20 @@ import classNames from 'classnames'
 import React from 'react'
 import { useSelector } from 'react-redux'
 import { RootState } from '../state/store'
-import './YouTubeHeaderButton.css'
 
-type YouTubeHeaderButtonProps = {
+type HeaderButtonProps = {
 	onHeaderButtonClicked: () => void
 }
 
-export function YouTubeHeaderButton(props: YouTubeHeaderButtonProps) {
+export function HeaderButton(props: HeaderButtonProps) {
 	const syncEnabled = useSelector(
 		(state: RootState) => state.sync.syncEnabled
 	)
 
 	return (
 		<button
-			className={classNames('youtoo-header-button', {
-				'youtoo-enabled': syncEnabled,
+			className={classNames('you2watch-header-button', {
+				'you2watch-enabled': syncEnabled,
 			})}
 			onClick={props.onHeaderButtonClicked}
 		>

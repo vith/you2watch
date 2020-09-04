@@ -4,23 +4,25 @@ import { Provider } from 'react-redux'
 import { store } from '../state/store'
 import { waitForElement } from '../util/dom/waitForElement'
 import { watchForRemovalFromDocument } from '../util/dom/watchForRemovalFromDocument'
-import { YouTooLogger } from '../util/YouTooLogger'
-import { YouTooDropdown } from './YouTooDropdown'
-import { YouTubeHeaderButton } from './YouTubeHeaderButton'
-const log = YouTooLogger.extend(YouTubeHeaderUI.name)
+import { baseLog } from '../util/logging'
+import { HeaderButton } from './HeaderButton'
+import { HeaderDropdown } from './HeaderDropdown'
+import './you2watch.css'
 
-export function YouTubeHeaderUI() {
+const log = baseLog.extend(HeaderUI.name)
+
+export function HeaderUI() {
 	const [showDropdown, setShowDropdown] = useState(false)
 
 	const toggleDropdown = () => setShowDropdown(!showDropdown)
 	const closeDropdown = () => setShowDropdown(false)
 
 	return (
-		<div className="youtoo-header-button-container">
+		<div className="you2watch-header-button-container">
 			<Provider store={store}>
-				<YouTubeHeaderButton onHeaderButtonClicked={toggleDropdown} />
+				<HeaderButton onHeaderButtonClicked={toggleDropdown} />
 				{showDropdown && (
-					<YouTooDropdown closeDropdown={closeDropdown} />
+					<HeaderDropdown closeDropdown={closeDropdown} />
 				)}
 			</Provider>
 		</div>
@@ -28,8 +30,8 @@ export function YouTubeHeaderUI() {
 }
 
 export async function mountHeaderUI(): Promise<HTMLDivElement> {
-	const youTooRoot = document.createElement('div')
-	youTooRoot.id = 'youtoo-topbar-root'
+	const you2watchRoot = document.createElement('div')
+	you2watchRoot.id = 'you2watch-topbar-root'
 
 	const createButtonSelector =
 		'#masthead #buttons #button[aria-label="Create"]'
@@ -38,13 +40,13 @@ export async function mountHeaderUI(): Promise<HTMLDivElement> {
 	const createButton = await waitForElement(document, createButtonSelector)
 	const buttons = createButton.closest('#buttons')
 
-	buttons.firstChild.before(youTooRoot)
+	buttons.firstChild.before(you2watchRoot)
 
-	ReactDOM.render(<YouTubeHeaderUI />, youTooRoot)
+	ReactDOM.render(<HeaderUI />, you2watchRoot)
 
 	log('mounted')
 
-	return youTooRoot
+	return you2watchRoot
 }
 
 export async function tenaciouslyMountHeaderUI() {

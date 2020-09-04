@@ -19,10 +19,10 @@ import {
 } from '../state/config'
 import { MessagesFromPage } from '../types/extensionMessages'
 import { RoomID } from '../types/SyncState'
+import { baseLog } from '../util/logging'
 import { asyncChromeStorageSyncGet } from '../util/webExtension/asyncChromeStorageSyncGet'
-import { YouTooLogger } from '../util/YouTooLogger'
 
-const log = YouTooLogger.extend('background')
+const log = baseLog.extend('background')
 
 const stompClient = new StompClient({
 	brokerURL: 'wss://ytsync.de.n3t.work/ws',

@@ -2,11 +2,11 @@ import { GlobalStateContainer } from '../../../state/notSafeForRedux'
 import { AppThunk } from '../../../state/store'
 import { PlaybackVerb } from '../../../types/PlaybackVerb'
 import { SyncState } from '../../../types/SyncState'
+import { baseLog } from '../../../util/logging'
 import { getCurrentPlayerState } from '../../../util/moviePlayer/getCurrentPlayerState'
-import { YouTooLogger } from '../../../util/YouTooLogger'
 import { loadingVideo, receiveSyncState, updateGoal } from '../sync'
 
-const log = YouTooLogger.extend(handleSyncEvent.name)
+const log = baseLog.extend(handleSyncEvent.name)
 
 export function handleSyncEvent(receivedSync: SyncState): AppThunk {
 	return async function handleSyncEventExecutor(dispatch, getState) {

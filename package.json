@@ -1,18 +1,19 @@
 {
-	"name": "youtoo-for-youtube",
+	"name": "you2watch",
 	"version": "0.1.1",
-	"description": "YouToo for YouTube - Watch youtube videos together",
+	"description": "watch youtube videos together",
 	"keywords": [
 		"youtube",
-		"sync"
+		"sync",
+		"webextension"
 	],
-	"homepage": "https://github.com/vith/youtoo-for-youtube#readme",
+	"homepage": "https://github.com/vith/you2watch#readme",
 	"bugs": {
-		"url": "https://github.com/vith/youtoo-for-youtube/issues"
+		"url": "https://github.com/vith/you2watch/issues"
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/vith/youtoo-for-youtube.git"
+		"url": "git+https://github.com/vith/you2watch.git"
 	},
 	"author": "Jason Papakostas <vithos@gmail.com>",
 	"scripts": {
@@ -66,14 +67,17 @@
 		"filenamify": "^4.1.0",
 		"npm-run-all": "^4.1.5",
 		"pkg-dir": "^4.2.0",
+		"pkg-up": "^3.1.0",
 		"pretty-bytes": "^5.4.1",
 		"pretty-ms": "^7.0.0",
+		"read-pkg": "^5.2.0",
 		"rimraf": "^3.0.2",
 		"style-loader": "^1.2.1",
 		"ts-loader": "^8.0.3",
 		"ts-node": "^9.0.0",
 		"typescript": "^4.0.2",
 		"webpack": "^4.44.1",
-		"webpack-cli": "^3.3.12"
+		"webpack-cli": "^3.3.12",
+		"webpack-version-file-plugin": "^0.4.0"
 	}
 }

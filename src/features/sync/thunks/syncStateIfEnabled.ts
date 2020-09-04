@@ -1,9 +1,9 @@
 import { AppThunk } from '../../../state/store'
 import { SyncState } from '../../../types/SyncState'
-import { YouTooLogger } from '../../../util/YouTooLogger'
+import { baseLog } from '../../../util/logging'
 import { syncStateWithPeers, updateGoal } from '../sync'
 
-const log = YouTooLogger.extend(syncStateIfEnabled.name)
+const log = baseLog.extend(syncStateIfEnabled.name)
 
 export function syncStateIfEnabled(syncableState: SyncState): AppThunk {
 	return async function syncStateIfEnabledExecutor(dispatch, getState) {

@@ -1,0 +1,46 @@
+:root {
+	--you2watch-bg-lightness: 94%;
+	--you2watch-border-lightness: 73%;
+}
+
+.you2watch-header-button {
+	padding: 3px 6px;
+	background-color: hsl(0, 0%, var(--you2watch-bg-lightness));
+	border: 3px solid hsl(0, 0%, var(--you2watch-border-lightness));
+	border-radius: 5px;
+}
+
+button.you2watch-enabled {
+	background-color: hsl(130, 40%, var(--you2watch-bg-lightness));
+	border-color: hsl(130, 40%, var(--you2watch-border-lightness));
+}
+
+.you2watch-header-button > .anticon {
+	margin-left: 0.2em;
+}
+
+#you2watch-topbar-root {
+	padding: 0 8px;
+	display: grid;
+	align-content: center;
+}
+
+#end.ytd-masthead {
+	/* create space for our button */
+	min-width: calc(224px + 65px + 8px * 2) !important;
+}
+
+.you2watch-header-dropdown {
+	position: absolute;
+	/* height: 300px; */
+	width: 200px;
+	margin-left: -53px;
+	margin-top: 17px;
+	border: 1px solid lightgrey;
+	background-color: whitesmoke;
+	padding: 10px;
+}
+
+.you2watch-field {
+	margin-bottom: 0.5em;
+}

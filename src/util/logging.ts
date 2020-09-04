@@ -1,5 +1,5 @@
 import debug from 'debug'
 
-export const YouTooLogger = debug('YouToo')
+export const baseLog = debug('you2watch')
 
 debug.enable('*')

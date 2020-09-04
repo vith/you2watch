@@ -1,15 +1,15 @@
-import { tenaciouslyMountHeaderUI } from '../components/YouTubeHeaderUI'
-import { YouTooLogger } from '../util/YouTooLogger'
-import { YouTooApp } from '../YouTooApp'
+import { tenaciouslyMountHeaderUI } from '../components/HeaderUI'
+import { PageService } from '../PageService'
+import { baseLog } from '../util/logging'
 
-const log = YouTooLogger.extend('page')
+const log = baseLog.extend('page')
 
 main()
 
 async function main() {
-	log('injecting YouToo topbar UI')
-	const youTooApp = new YouTooApp()
-	await youTooApp.initialize()
+	log('injecting you2watch topbar UI')
+	const pageService = new PageService()
+	await pageService.initialize()
 	await tenaciouslyMountHeaderUI()
-	log('YouToo loaded')
+	log('you2watch loaded')
 }

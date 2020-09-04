@@ -1,12 +1,12 @@
 {
-	"name": "YouToo for YouTube",
-	"version": "1.0",
-	"description": "Watch YouTube videos together",
+	"name": "<%= package.name %>",
+	"version": "<%= package.version %>",
+	"description": "<%= package.description %>",
 	"manifest_version": 2,
 	"permissions": ["storage"],
 	"background": {
 		"scripts": ["background.js"],
-		"persistent": true
+		"persistent": false
 	},
 	"content_scripts": [
 		{
