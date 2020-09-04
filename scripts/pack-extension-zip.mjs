@@ -14,16 +14,16 @@ packExtensionZip()
 
 function packExtensionZip() {
 	const version = ver()
-	const filename = filenamify(`youtoo-${version}.zip`, { replacement: '_' })
+	const filename = `youtoo-${version}.zip`
 	const pkgRoot = pkgDir.sync()
 	const outputPath = path.join(pkgRoot, 'build', filename)
 
-	const output = fs.createWriteStream(outputPath)
+	const outputStream = fs.createWriteStream(outputPath)
 	const archive = archiver('zip', {
 		zlib: { level: 9 },
 	})
 
-	output.on('close', () => {
+	outputStream.on('close', () => {
 		const finishTime = Date.now()
 		const elapsed = prettyMs(finishTime - startTime)
 		const outputPathRelative = path.relative(pkgRoot, outputPath)
@@ -33,57 +33,26 @@ function packExtensionZip() {
 			)} bytes to ${outputPathRelative} in ${elapsed}`
 		)
 	})
-	output.on('end', () => console.log('Data has been drained'))
+	outputStream.on('end', () => console.log('Data has been drained'))
 	archive.on('warning', err => {
 		throw err
 	})
 	archive.on('error', err => {
 		throw err
 	})
-	archive.pipe(output)
+	archive.pipe(outputStream)
 	archive.directory(path.join(pkgRoot, 'build', 'unpacked'), false)
 	archive.finalize()
 }
 
 function ver() {
-	// git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
-	/* ( set -o pipefail
-		git describe --long 2>/dev/null | sed 's/\([^-]*-g\)/r\1/;s/-/./g' ||
-		printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
-	) */
+	let version = execa.commandSync(
+		'git describe --long --tags --dirty --always'
+	).stdout
 
-	return (
-		baseVersion() +
-		(isDirty() ? `-dirty-${new Date(startTime).toISOString()}` : '')
-	)
-}
-
-function baseVersion() {
-	try {
-		return tagRelativeGitVersion()
-			.replace(/\([^-]*-g\)/, 'r$1')
-			.replace(/-/g, '.')
-	} catch (err) {
-		return `r${gitRevisionCount()}.${latestCommitHash()}`
+	if (version.endsWith('-dirty')) {
+		version = `${version}-${new Date(startTime).toISOString()}`
 	}
-}
 
-function latestCommitHash() {
-	return execa.commandSync('git rev-parse --short HEAD').stdout
-}
-
-function gitRevisionCount() {
-	return execa.commandSync('git rev-list --count HEAD').stdout
-}
-
-function tagRelativeGitVersion() {
-	return execa.commandSync('git describe --long --tags').stdout
-}
-
-function isDirty() {
-	return getStatusPorcelain().length > 0
-}
-
-function getStatusPorcelain() {
-	return execa.commandSync('git status --porcelain').stdout
+	return filenamify(version)
 }
