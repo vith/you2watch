@@ -33,12 +33,16 @@ export async function mountHeaderUI(): Promise<HTMLDivElement> {
 	const you2watchRoot = document.createElement('div')
 	you2watchRoot.id = 'you2watch-topbar-root'
 
-	const buttonSelector = '#masthead #buttons #button'
-	log('waiting for %j', buttonSelector)
+	const firstButtonRendererSelector =
+		'#masthead #buttons ytd-topbar-menu-button-renderer:first-child'
+	log('waiting for %j', firstButtonRendererSelector)
 
-	const button = await waitForElement(document, buttonSelector)
+	const firstButtonRenderer = await waitForElement(
+		document,
+		firstButtonRendererSelector
+	)
 
-	const buttons = button.closest('#buttons')
+	const buttons = firstButtonRenderer.closest('#buttons')
 
 	buttons.firstChild.before(you2watchRoot)
 
