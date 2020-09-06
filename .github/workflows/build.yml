@@ -8,3 +8,8 @@ jobs:
             - uses: actions/setup-node@v1
             - run: npm ci
             - run: npm run pack
+            - name: save as artifact
+              uses: actions/upload-artifact@v2
+              with:
+                  name: built-extension-zip
+                  path: build/*.zip
