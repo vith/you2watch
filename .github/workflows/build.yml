@@ -9,6 +9,7 @@ jobs:
               with:
                   node-version: '14'
             - run: npm ci
+            - run: npm run build
             - run: npm run pack
             - name: save as artifact
               uses: actions/upload-artifact@v2
