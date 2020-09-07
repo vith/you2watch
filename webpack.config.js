@@ -1,11 +1,13 @@
-const path = require('path')
 const CopyPlugin = require('copy-webpack-plugin')
-const WebPackVersionFilePlugin = require('webpack-version-file-plugin')
+const path = require('path')
 const pkgDir = require('pkg-dir')
 const pkgUp = require('pkg-up')
+const WebPackVersionFilePlugin = require('webpack-version-file-plugin')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const { ProgressPlugin } = require('webpack')
 
 module.exports = {
-	mode: 'development',
+	mode: 'production',
 	devtool: 'inline-source-map',
 	// devtool: 'none',
 	entry: Object.fromEntries(
@@ -16,15 +18,26 @@ module.exports = {
 	),
 	output: {
 		publicPath: 'chrome-extension://mmfgacfcjdhhobbicplipgeablenfego/',
-		path: path.resolve(__dirname, 'build/unpacked'),
+		path: path.resolve(pkgDir.sync(), 'build', 'unpacked'),
 	},
 	resolve: {
 		extensions: ['.ts', '.tsx', '.js', '.jsx'],
 	},
 	plugins: [
-		/* new CopyPlugin({
-			patterns: [{ from: 'src/static' }],
-		}), */
+		new ProgressPlugin(),
+		// new CleanWebpackPlugin({
+		// 	// TODO: figure out why manifest.json gets removed
+		// 	cleanAfterEveryBuildPatterns: ['**/*', '!manifest.json'],
+		// 	verbose: true,
+		// }),
+		new CopyPlugin({
+			patterns: [
+				{
+					from: 'src/static/*.png',
+					flatten: true,
+				},
+			],
+		}),
 		new WebPackVersionFilePlugin({
 			packageFile: path.join(pkgUp.sync()),
 			outputFile: path.join(

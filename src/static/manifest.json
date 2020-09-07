@@ -1,8 +1,15 @@
 {
+	"manifest_version": 2,
 	"name": "<%= package.name %>",
 	"version": "<%= package.version %>",
+
 	"description": "<%= package.description %>",
-	"manifest_version": 2,
+	"icons": {
+		"16": "<%= package.name %>16.png",
+		"48": "<%= package.name %>48.png",
+		"128": "<%= package.name %>128.png"
+	},
+
 	"permissions": ["storage"],
 	"background": {
 		"scripts": ["background.js"],

@@ -13,5 +13,5 @@ jobs:
             - name: save as artifact
               uses: actions/upload-artifact@v2
               with:
-                  name: built-extension-zip
+                  name: build-archive
                   path: build/*.zip

@@ -3,11 +3,16 @@
 	--you2watch-border-lightness: 73%;
 }
 
+#you2watch-topbar-root {
+	font-size: 1.4rem;
+}
+
 .you2watch-header-button {
 	padding: 3px 6px;
 	background-color: hsl(0, 0%, var(--you2watch-bg-lightness));
 	border: 3px solid hsl(0, 0%, var(--you2watch-border-lightness));
 	border-radius: 5px;
+	white-space: nowrap;
 }
 
 button.you2watch-enabled {
@@ -43,4 +48,9 @@ button.you2watch-enabled {
 
 .you2watch-field {
 	margin-bottom: 0.5em;
+}
+
+.you2watch-field label {
+	padding: 0.5 rem;
+	padding-left: 0;
 }
