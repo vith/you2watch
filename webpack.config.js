@@ -17,7 +17,7 @@ module.exports = {
 		])
 	),
 	output: {
-		publicPath: 'chrome-extension://mmfgacfcjdhhobbicplipgeablenfego/',
+		publicPath: 'chrome-extension://ebihioehgamedmkomodfopiiflljphif/',
 		path: path.resolve(pkgDir.sync(), 'build', 'unpacked'),
 	},
 	resolve: {

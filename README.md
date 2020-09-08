@@ -8,7 +8,7 @@ _you2watch_ is a WebExtension for watching videos on YouTube in sync with your f
 
 -   **Chrome**: _not yet_ available on the [Chrome Web Store]
 
-<!-- [chrome web store]: https://chrome.google.com/webstore/detail/you2watch/xxxxxxxx -->
+<!-- [chrome web store]: https://chrome.google.com/webstore/detail/you2watch/ebihioehgamedmkomodfopiiflljphif -->
 
 # Usage
 
