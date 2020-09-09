@@ -15,12 +15,17 @@
 		"type": "git",
 		"url": "git+https://github.com/vith/you2watch.git"
 	},
+	"type": "module",
 	"author": "Jason Papakostas <vithos@gmail.com>",
 	"scripts": {
-		"build": "webpack",
+		"build": "webpack --config webpack.config.cjs",
+		"build:prod": "cross-env NODE_ENV=production webpack --config webpack.config.cjs",
 		"clean": "rimraf build/unpacked",
-		"pack": "node ./scripts/pack-extension-zip.mjs",
-		"watch": "webpack --watch"
+		"pack-zip": "npm-run-all clean build:prod packaging:pack",
+		"packaging": "node --loader ts-node/esm ./scripts/packaging.ts",
+		"packaging:ci-export-version": "npm run packaging ci-export-version",
+		"packaging:pack": "npm run packaging pack",
+		"watch": "npm run build -- --watch"
 	},
 	"browserslist": [
 		"last 1 chrome version"
@@ -56,15 +61,18 @@
 		"@types/react-dom": "^16.9.8",
 		"@types/react-redux": "^7.1.9",
 		"@types/react-timeago": "^4.1.1",
+		"@types/yargs": "^15.0.5",
 		"@types/youtube": "0.0.39",
 		"archiver": "^5.0.0",
 		"babel-loader": "^8.1.0",
 		"clean-webpack-plugin": "^3.0.0",
 		"copy-webpack-plugin": "^6.1.0",
+		"cross-env": "^7.0.2",
 		"css-loader": "^4.2.2",
 		"execa": "^4.0.3",
 		"file-loader": "^6.1.0",
 		"filenamify": "^4.1.0",
+		"npm-run-all": "^4.1.5",
 		"pkg-dir": "^4.2.0",
 		"pkg-up": "^3.1.0",
 		"pretty-bytes": "^5.4.1",
@@ -77,6 +85,7 @@
 		"typescript": "^4.0.2",
 		"webpack": "^4.44.1",
 		"webpack-cli": "^3.3.12",
-		"webpack-version-file-plugin": "^0.4.0"
+		"webpack-version-file-plugin": "^0.4.0",
+		"yargs": "^15.4.1"
 	}
 }

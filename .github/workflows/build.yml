@@ -1,18 +1,23 @@
 name: build
+
 on: push
+
 jobs:
-    build:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v2
-            - uses: actions/setup-node@v1
-              with:
-                  node-version: '14'
-            - run: npm ci
-            - run: npm run build
-            - run: npm run pack
-            - name: save as artifact
-              uses: actions/upload-artifact@v2
-              with:
-                  name: build-archive
-                  path: build/*.zip
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "14"
+
+      - run: npm ci
+      - run: npm run build
+      - run: npm run pack
+      - run: npm run ci-export-version
+
+      - name: save as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: "you2watch-${{ env._BUILD_VERSION }}.zip"
+          path: "build/you2watch-${{ env._BUILD_VERSION }}.zip"

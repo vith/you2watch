@@ -6,10 +6,18 @@ const WebPackVersionFilePlugin = require('webpack-version-file-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const { ProgressPlugin } = require('webpack')
 
+const PROD_SOURCEMAPS = true
+
+const prod = process.env.NODE_ENV === 'production'
+const dev = !prod
+
+const mode = prod ? 'production' : 'development'
+
+const devtool = PROD_SOURCEMAPS || dev ? 'inline-source-map' : 'none'
+
 module.exports = {
-	mode: 'production',
-	devtool: 'inline-source-map',
-	// devtool: 'none',
+	mode,
+	devtool,
 	entry: Object.fromEntries(
 		['background', 'contentScript', 'page'].map(entry => [
 			entry,

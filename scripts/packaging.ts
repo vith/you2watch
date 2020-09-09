@@ -7,13 +7,24 @@ import pkgDir from 'pkg-dir'
 import prettyBytes from 'pretty-bytes'
 import prettyMs from 'pretty-ms'
 import readPkg from 'read-pkg'
+import yargs from 'yargs'
 
-const startTime = Date.now()
 const pkg = readPkg.sync()
 
-packExtensionZip()
+yargs
+	.command('pack', 'create build zip', {}, packExtensionZip)
+	.command('version', 'print version string', {}, () => console.log(ver()))
+	.command(
+		'ci-export-version',
+		'exports the version string to the github actions environment',
+		{},
+		() => console.log(`::set-env name=_BUILD_VERSION::${ver()}`)
+	)
+	.demandCommand()
+	.help().argv
 
 function packExtensionZip() {
+	const startTime = Date.now()
 	const filename = `${pkg.name}-${ver()}.zip`
 	const pkgRoot = pkgDir.sync()
 	const outputPath = path.join(pkgRoot, 'build', filename)
@@ -51,7 +62,8 @@ function ver() {
 	).stdout
 
 	if (version.endsWith('-dirty')) {
-		version = `${version}-${new Date(startTime).toISOString()}`
+		const timestamp = new Date().toISOString()
+		version = `${version}-${timestamp}`
 	}
 
 	return filenamify(version)
