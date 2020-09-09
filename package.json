@@ -15,13 +15,13 @@
 		"type": "git",
 		"url": "git+https://github.com/vith/you2watch.git"
 	},
-	"type": "module",
 	"author": "Jason Papakostas <vithos@gmail.com>",
+	"type": "module",
 	"scripts": {
 		"build": "webpack --config webpack.config.cjs",
 		"build:prod": "cross-env NODE_ENV=production webpack --config webpack.config.cjs",
 		"clean": "rimraf build/unpacked",
-		"pack-zip": "npm-run-all clean build:prod packaging:pack",
+		"pack": "npm-run-all clean build:prod packaging:pack",
 		"packaging": "node --loader ts-node/esm ./scripts/packaging.ts",
 		"packaging:ci-export-version": "npm run packaging ci-export-version",
 		"packaging:pack": "npm run packaging pack",
