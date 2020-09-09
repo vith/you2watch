@@ -12,9 +12,8 @@ jobs:
           node-version: "14"
 
       - run: npm ci
-      - run: npm run build
       - run: npm run pack
-      - run: npm run ci-export-version
+      - run: npm run packaging:ci-export-version
 
       - name: save as artifact
         uses: actions/upload-artifact@v2
