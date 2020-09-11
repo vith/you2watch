@@ -2,7 +2,9 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { syncStateWithPeers } from '../features/sync/sync'
 import { handleSyncEvent } from '../features/sync/thunks/handleReceivedSync'
 import { MessagesFromBackground } from '../types/extensionMessages'
+import { assertUnreachable } from '../util/typescript/assertUnreachable'
 import { findExtensionID } from '../util/webExtension/findExtensionID'
+import { configChanged, configLoaded } from './config'
 import { GlobalStateContainer } from './notSafeForRedux'
 import { AppDispatch, RootState } from './store'
 
@@ -38,16 +40,26 @@ export function connectToBackgroundScript(
 
 	const extensionID = findExtensionID()
 
-	const port = chrome.runtime.connect(extensionID)
+	const port = chrome.runtime.connect(extensionID, { name: 'background' })
 
 	function onPortDisconnect(port: chrome.runtime.Port) {
 		const reason = chrome.runtime.lastError?.message
 		dispatch(portDisconnected(reason))
 	}
 
-	function onPortMessage(event: MessagesFromBackground) {
-		if (syncStateWithPeers.match(event)) {
-			dispatch(handleSyncEvent(event.payload))
+	function onPortMessage(action: MessagesFromBackground) {
+		const receivedAction = {
+			...action,
+			_forwarded: true,
+		}
+		if (syncStateWithPeers.match(receivedAction)) {
+			dispatch(handleSyncEvent(receivedAction.payload))
+		} else if (configChanged.match(receivedAction)) {
+			dispatch(receivedAction)
+		} else if (configLoaded.match(receivedAction)) {
+			dispatch(receivedAction)
+		} else {
+			assertUnreachable(receivedAction)
 		}
 	}
 

@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react'
 import { useRootClose } from 'react-overlays'
 import { useDispatch, useSelector } from 'react-redux'
 import { toggleSync } from '../features/sync/thunks/toggleSync'
-import { updateConfig } from '../state/config'
+import { changeConfig } from '../state/config'
 import { RootState } from '../state/store'
 import { baseLog } from '../util/logging'
 
@@ -49,8 +49,8 @@ export function HeaderDropdown(props: HeaderDropdownProps) {
 	const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
 
-		if (hasUserIDChange) dispatch(updateConfig({ userID: editingUserID }))
-		if (hasRoomID) dispatch(updateConfig({ roomID: editingRoomID }))
+		if (hasUserIDChange) dispatch(changeConfig({ userID: editingUserID }))
+		if (hasRoomID) dispatch(changeConfig({ roomID: editingRoomID }))
 	}
 
 	return (

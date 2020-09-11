@@ -1,6 +1,5 @@
-import { createSlice, PayloadAction, SliceCaseReducers } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import cryptoRandomString from 'crypto-random-string'
-import { GlobalStateContainer } from '../../state/notSafeForRedux'
 import { PeerStates } from '../../types/PeerStates'
 import { RoomID, SessionID, SyncState, VideoID } from '../../types/SyncState'
 
@@ -13,6 +12,15 @@ interface SyncSliceState {
 	buffering: boolean
 }
 
+const initialState: SyncSliceState = {
+	sessionID: cryptoRandomString({ length: 12, type: 'distinguishable' }),
+	peerStates: {},
+	goalState: null,
+	loadingVideoID: null,
+	syncEnabled: false,
+	buffering: false,
+}
+
 export type ReceiveSyncAction = PayloadAction<SyncState>
 export type LoadingVideoAction = PayloadAction<VideoID>
 export type RoomSubscribeAction = PayloadAction<RoomID>
@@ -21,20 +29,9 @@ export type SyncStateWithPeersAction = PayloadAction<SyncState>
 export type SyncToggledAction = PayloadAction<boolean>
 export type UpdateGoalAction = PayloadAction<SyncState>
 
-export const syncSlice = createSlice<
-	SyncSliceState,
-	SliceCaseReducers<SyncSliceState>,
-	'sync'
->({
+export const syncSlice = createSlice({
 	name: 'sync',
-	initialState: {
-		sessionID: cryptoRandomString({ length: 12, type: 'distinguishable' }),
-		peerStates: {},
-		goalState: null,
-		loadingVideoID: null,
-		syncEnabled: false,
-		buffering: false,
-	},
+	initialState,
 	reducers: {
 		receiveSyncState: (state, action: ReceiveSyncAction) => {
 			const peerID = action.payload.sessionID
@@ -45,17 +42,11 @@ export const syncSlice = createSlice<
 			state.loadingVideoID = action.payload
 		},
 
-		subscribeToRoom: (state, action: RoomSubscribeAction) => {
-			postActionToBackground(state.sessionID, action)
-		},
+		subscribeToRoom: (state, action: RoomSubscribeAction) => {},
 
-		unsubscribeFromRoom: (state, action: RoomUnsubscribeAction) => {
-			postActionToBackground(state.sessionID, action)
-		},
+		unsubscribeFromRoom: (state, action: RoomUnsubscribeAction) => {},
 
 		syncStateWithPeers: (state, action: SyncStateWithPeersAction) => {
-			postActionToBackground(state.sessionID, action)
-
 			state.peerStates[action.payload.sessionID] = action.payload
 		},
 
@@ -68,15 +59,6 @@ export const syncSlice = createSlice<
 		},
 	},
 })
-
-export function postActionToBackground<T_Payload>(
-	sessionID: SessionID,
-	action: PayloadAction<T_Payload>
-) {
-	const { port } = GlobalStateContainer.getState(sessionID)
-
-	port.postMessage(action)
-}
 
 export const {
 	receiveSyncState,
