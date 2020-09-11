@@ -6,6 +6,7 @@ import {
 } from '@reduxjs/toolkit'
 import { ThunkAction } from 'redux-thunk'
 import { syncSlice } from '../features/sync/sync'
+import { changeRoomSubscription } from '../middleware/changeRoomSubscription'
 import { forwardActionsToBackground } from '../middleware/forwardActionsToBackground'
 import { configSlice } from './config'
 import { domNodesSlice } from './domNodes'
@@ -28,7 +29,10 @@ export type RootState = ReturnType<typeof rootReducer>
 
 export const store = configureStore({
 	reducer: rootReducer,
-	middleware: getDefaultMiddleware().concat([forwardActionsToBackground]),
+	middleware: getDefaultMiddleware().concat([
+		forwardActionsToBackground,
+		changeRoomSubscription,
+	]),
 })
 
 export type AppDispatch = typeof store.dispatch
